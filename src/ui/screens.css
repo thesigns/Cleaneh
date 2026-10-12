@@ -1295,6 +1295,92 @@
   margin: 0;
 }
 
+/* Developer mode (13.4). */
+.segments--primary .segment[aria-checked='true'] {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.dev__panel {
+  gap: 0.75rem;
+  padding: 0.875rem 0.75rem;
+}
+
+.dev__panel .segments {
+  background: var(--surface-container);
+}
+
+.dev__panel > p:not(.dev__preview),
+.dev__text {
+  margin: 0;
+  padding: 0 0.25rem;
+}
+
+.dev__text {
+  color: var(--on-surface-variant);
+}
+
+.dev__actions {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 6rem), 1fr));
+  gap: 0.5rem;
+}
+
+.dev__actions .button {
+  width: 100%;
+  min-height: 3rem;
+  padding-inline: 0.75rem;
+  white-space: nowrap;
+}
+
+/* Longer labels: two to a row. */
+.dev__lasts {
+  grid-template-columns: 1fr 1fr;
+}
+
+/* "Real" on its own row, then the twelve months. */
+.dev__months .segment:first-child {
+  grid-column: 1 / -1;
+}
+
+.dev__status:empty {
+  display: none;
+}
+
+.dev__preview {
+  margin: 0;
+  padding: 0.75rem 1rem;
+  border-radius: 1rem;
+  background: var(--surface-container);
+}
+
+.pool {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.pool-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.pool-row__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.pool-row__area {
+  color: var(--area);
+}
+
+.pool-row__numbers {
+  color: var(--on-surface-variant);
+  font-variant-numeric: tabular-nums;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .summary__hero,
   .spot,

@@ -530,13 +530,15 @@ Zasada: cała logika decyzyjna jest w `core` i jest pokryta testami jednostkowym
 
 ### 13.4. Tryb deweloperski
 
-Tylko w wersji deweloperskiej (serwer deweloperski i podglądy wdrożeń); w wersji produkcyjnej go nie ma. Dane wersji deweloperskiej są osobne same z siebie, bo inny adres to osobne miejsce w przeglądarce.
+Tylko w wersji deweloperskiej; w prawdziwej apce go nie ma. Wersja deweloperska to serwer deweloperski (`localhost`, `127.0.0.1`) albo dowolny adres z `?dev` (GitHub Pages nie ma podglądów wdrożeń, więc na telefonie: wdrożona apka z `?dev`, w przeglądarce, nie z ikony). Na serwerze deweloperskim dane są osobne same z siebie, bo inny adres to osobne miejsce w przeglądarce; pod `?dev` apka używa osobnej bazy (`cleaneh-dev`, z własną kolejką i kanałem kart), więc prawdziwe dane zostają nietknięte.
 
-- **Przesunięcie czasu** (+12 h, +1 dzień, +1 tydzień): zegar zostaje prawdziwy, a stan pytań się starzeje (daty ostatniego sprzątania cofają się o tyle). Dla harmonogramu to to samo co upływ czasu, a stoper i podsumowanie dnia działają normalnie. Tylko gdy nic nie trwa (bez serii i zadania). Historia odpowiedzi się nie zmienia.
+Wejście: sekcja „Dla programistów” na końcu Ustawień, ekran `/settings/dev`, podgląd puli `/settings/dev/pool`. Pokrętła (miesiąc, motyw, ostatnie sprzątanie na niby) trzyma `localStorage` tej przeglądarki, poza danymi apki i bez migracji; inne karty idą za zmianą.
+
+- **Przesunięcie czasu** (+12 h, +1 dzień, +1 tydzień): zegar zostaje prawdziwy, a stan pytań się starzeje (daty ostatniego sprzątania cofają się o tyle). Dla harmonogramu to to samo co upływ czasu, a stoper i podsumowanie dnia działają normalnie. Tylko gdy nic nie trwa (bez serii, zadania i Obchodu w toku); inaczej krótka informacja, że coś trwa. Historia odpowiedzi się nie zmienia.
 - **Podmiana bieżącego miesiąca** (test sezonowości): sezony liczą się według wybranego miesiąca.
-- **Szybkie przełączanie** języka i motywu.
+- **Szybkie przełączanie** języka (to samo ustawienie co w Ustawieniach, apka się przeładowuje) i motywu (systemowy, jasny, ciemny; od razu, bez przeładowania).
 - **Podgląd puli**: aktywne pytania z interwałem, przeterminowaniem, wagą i szacowanym czasem; najpierw te w puli, według wagi.
-- **Ostatnie sprzątanie na niby**: ustawienie czasu ostatniego ZROBIONE (godzina, 2 dni, 2 tygodnie temu), żeby obejrzeć wszystkie warianty linijki z 5.1.
+- **Ostatnie sprzątanie na niby**: ustawienie czasu ostatniego ZROBIONE (godzina, 2 dni, 2 tygodnie temu, albo prawdziwe), żeby obejrzeć wszystkie warianty linijki z 5.1. Zastępuje prawdziwy czas tylko w tej linijce, historia się nie zmienia; ekran pokazuje, jak linijka brzmi. „Nigdy” i „przed chwilą” widać naturalnie (nowe mieszkanie, świeże ZROBIONE).
 
 ### 13.5. Cleanerr a Cleaneh
 
@@ -549,7 +551,7 @@ Tylko w wersji deweloperskiej (serwer deweloperski i podglądy wdrożeń); w wer
 
 - Windows, Git Bash i PowerShell. Node (LTS) i npm tylko dla narzędzi deweloperskich (testy, Playwright, lint).
 - Telefon testowy: Xiaomi Redmi Note 10 (Android 11, MIUI, Chrome).
-- Wersja deweloperska na telefonie: najprościej podgląd wdrożony przez HTTPS. Serwer deweloperski w sieci lokalnej też działa, ale bez service workera, instalacji i trwałego miejsca, bo te wymagają HTTPS albo `localhost`.
+- Wersja deweloperska na telefonie: najprościej wdrożona apka z `?dev` (HTTPS, osobna baza, 13.4). Serwer deweloperski w sieci lokalnej (też z `?dev`) działa, ale bez service workera, instalacji i trwałego miejsca, bo te wymagają HTTPS albo `localhost`.
 - Testy i zrzuty ekranu bez telefonu: Playwright z emulacją telefonu.
 
 ### 14.2. Praca z Claude Code

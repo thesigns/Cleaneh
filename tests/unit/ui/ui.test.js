@@ -152,3 +152,21 @@ test('work time: minutes, whole hours, hours and minutes, every started minute c
   assert.equal(workTime(t, 60), '1 h');
   assert.equal(workTime(t, 260), '4 h 20 min');
 });
+
+test('developer mode: on the development server, or with ?dev and a database of its own; never otherwise', async () => {
+  const { devMode } = await import('../../../src/ui/dev.js');
+  assert.equal(devMode({ hostname: 'localhost', search: '' }), 'local');
+  assert.equal(devMode({ hostname: '127.0.0.1', search: '' }), 'local');
+  assert.equal(devMode({ hostname: '[::1]', search: '?dev' }), 'local');
+  assert.equal(devMode({ hostname: 'jakub.github.io', search: '' }), null);
+  assert.equal(devMode({ hostname: 'jakub.github.io', search: '?developer' }), null);
+  assert.equal(devMode({ hostname: 'jakub.github.io', search: '?dev' }), 'flag');
+  assert.equal(devMode({ hostname: '192.168.1.20', search: '?x=1&dev=1' }), 'flag');
+});
+
+test('Polish intervals in the pool preview: whole days and fractions', () => {
+  const t = createI18n('pl').t;
+  assert.equal(t('dev.interval', { count: 1, days: '1' }), 'co\u00a01\u00a0dzień');
+  assert.equal(t('dev.interval', { count: 3, days: '3' }), 'co\u00a03\u00a0dni');
+  assert.equal(t('dev.interval', { count: 2.5, days: '2,5' }), 'co\u00a02,5\u00a0dnia');
+});

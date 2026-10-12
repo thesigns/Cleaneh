@@ -11,7 +11,7 @@
 
 ---
 
-> **Status: early development.** The offline app skeleton, the decision logic (with tests and a 60-day simulation) and on-device storage, the setup, the Sweep, the main loop (give me a task, series, stopwatch, rewards), the big clean and settings are in place; developer mode and the final PWA polish are next.
+> **Status: early development.** The offline app skeleton, the decision logic (with tests and a 60-day simulation) and on-device storage, the setup, the Sweep, the main loop (give me a task, series, stopwatch, rewards), the big clean, settings and developer mode are in place; the final PWA polish is next.
 > See the [build order](docs/cleaneh-design.md#143-kolejność-budowy) in the specification.
 
 ## The idea
@@ -59,6 +59,8 @@ npm run serve
 Then open <http://127.0.0.1:8080/> in a browser. In Chrome, DevTools → device toolbar (Ctrl+Shift+M) shows it at phone size.
 
 The service worker, installation and persistent storage need HTTPS or `localhost`, so on a phone over the local network (`npm run serve -- --host 0.0.0.0`) the app opens, but works online only.
+
+**Developer mode** (time shift, season month, language and theme, a pretend last cleaning, the pool preview) is at the end of Settings on `localhost`, or on any address with `?dev` — there with a separate database, so real data stays untouched. The real app never shows it.
 
 ## Development
 

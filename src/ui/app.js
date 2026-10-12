@@ -2,12 +2,14 @@
 
 import { startEngine } from '../engine/start.js';
 import { button } from './components.js';
+import { devMode, devPref, loadDevPrefs } from './dev.js';
 import { h } from './dom.js';
 import { createI18n, detectLanguage } from './i18n/index.js';
 import { loadIcons } from './icons.js';
 import { watchInstallPrompt } from './install.js';
 import { createRouter } from './router.js';
 import { cleanScreen } from './screens/clean.js';
+import { devScreen } from './screens/dev.js';
 import { homeScreen, pathToArea } from './screens/home.js';
 import { settingsScreen } from './screens/settings.js';
 import { SETUP_PATHS, allowedInSetup, setupScreen } from './screens/setup.js';
@@ -22,6 +24,7 @@ function screenFor(ctx, path) {
   }
   const parts = path.split('/').filter(Boolean);
   if (parts[0] === 'setup' && step !== 'done') return setupScreen(ctx, parts[1]);
+  if (parts[0] === 'settings' && parts[1] === 'dev' && ctx.dev) return devScreen(ctx, parts[2] ?? null);
   if (parts[0] === 'settings') return settingsScreen(ctx, parts[1] ?? null);
   if (parts[0] === 'clean') return cleanScreen(ctx);
   if (parts[0] === 'sweep') {
@@ -49,10 +52,13 @@ function errorScreen(root, error) {
 
 export async function startApp(root) {
   watchInstallPrompt();
+  // Developer mode (13.4): with ?dev on the real address its data goes to a database of its own.
+  const dev = devMode(location);
+  if (dev) loadDevPrefs();
   await loadIcons();
   let started;
   try {
-    started = await startEngine();
+    started = await startEngine(dev ? { name: dev === 'flag' ? 'cleaneh-dev' : undefined, dev: { month: () => devPref('month'), lastDoneAt: () => devPref('lastDone')?.at ?? null } } : {});
   } catch (error) {
     console.error(error);
     errorScreen(root, error);
@@ -73,6 +79,8 @@ export async function startApp(root) {
     /** The settings as loaded; screens that change them update this too. */
     settings,
     haptics: () => ctx.settings.sound && navigator.vibrate?.(10),
+    /** Developer mode: 'local', 'flag' or null (the real app). */
+    dev,
     router: null,
   };
   ctx.router = createRouter(root, (path) => screenFor(ctx, path));

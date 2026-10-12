@@ -1,6 +1,6 @@
 // Settings (specification 5.2): rooms and switches (the same editors as in
 // the setup), turned-off questions, language, sound and vibration, installing,
-// starting over, and about.
+// starting over, and about; in the development version also developer mode (13.4).
 
 import { APP_VERSION } from '../../version.js';
 import { keyArea } from '../../core/scheduler.js';
@@ -18,7 +18,7 @@ import { openSheet } from '../sheet.js';
 import { installInstructions } from './setup.js';
 
 /** A page of Settings: back, title, an optional intro, the content. */
-function page(ctx, title, intro, ...content) {
+export function page(ctx, title, intro, ...content) {
   const t = ctx.i18n.t;
   return h(
     'div',
@@ -29,7 +29,7 @@ function page(ctx, title, intro, ...content) {
 }
 
 /** One setting: icon on a blob, title and explanation; a tap opens it, or a switch at the end. */
-function row({ iconName, hue, title, text, onClick = null, control = null, id = null }) {
+export function row({ iconName, hue, title, text, onClick = null, control = null, id = null }) {
   const body = [iconBlob(iconName, { size: '3.25rem', animated: false }), h('span', { class: 'setting__text' }, h('span', { class: 't-title-m' }, title), text ? h('span', { class: 'setting__sub t-body-m' }, text) : null)];
   const el = control
     ? h('label', { class: 'setting area', for: id }, ...body, control)
@@ -37,7 +37,7 @@ function row({ iconName, hue, title, text, onClick = null, control = null, id = 
   return paintArea(el, hue);
 }
 
-function section(title, ...rows) {
+export function section(title, ...rows) {
   return h('section', { class: 'settings__section' }, h('h2', { class: 'settings__heading t-label-l' }, title), h('div', { class: 'settings__group' }, ...rows));
 }
 
@@ -82,6 +82,7 @@ export async function settingsScreen(ctx, part) {
       isInstalled() ? null : row({ iconName: 'ui_add_square', hue: GROUP_HUES.AIR, title: t('settings.install'), text: t('settings.installText'), onClick: () => install(ctx) }),
     ),
     section(t('settings.data'), row({ iconName: 'ui_close', hue: ROOM_HUES[1], title: t('settings.reset'), text: t('settings.resetText'), onClick: () => startOver(ctx) })),
+    ctx.dev ? section(t('settings.devSection'), row({ iconName: 'ui_hourglass', hue: GROUP_HUES.ELECTRONICS, title: t('dev.title'), text: t('settings.devText'), onClick: () => router.navigate('/settings/dev') })) : null,
     section(
       t('settings.about'),
       h(

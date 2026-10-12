@@ -36,8 +36,9 @@ export const systemRandom = { next: () => Math.random() };
  * @param {import('../core/random.js').Random} [options.random]
  * @param {{ run: Function }} [options.lock]
  * @param {string} [options.channelName] tabs with the same name hear each other's changes
+ * @param {() => number | null} [options.lastDoneAt] developer mode (13.4): a pretend time of the last DONE; null = real
  */
-export function createEngine({ store, scheduler, zone, clock = systemClock, random = systemRandom, lock = createLock('cleaneh-engine'), channelName = CHANNEL }) {
+export function createEngine({ store, scheduler, zone, clock = systemClock, random = systemRandom, lock = createLock('cleaneh-engine'), channelName = CHANNEL, lastDoneAt = () => null }) {
   const loop = createLoop(scheduler);
   const planner = createPlanner(scheduler);
   const listeners = new Set();
@@ -87,7 +88,7 @@ export function createEngine({ store, scheduler, zone, clock = systemClock, rand
   /** What the screens show: the home, the activity, the Sweep in progress, settings, today and the last cleaning. */
   function snapshot() {
     return locked(async ({ household, activity, sweep, settings }, now) => {
-      const [doneAt, recent, firstDone] = await Promise.all([store.lastDoneAt(), store.doneSince(now - 2 * DAY_MS), store.firstSweepDone()]);
+      const [doneAt, recent, firstDone] = await Promise.all([lastDoneAt() ?? store.lastDoneAt(), store.doneSince(now - 2 * DAY_MS), store.firstSweepDone()]);
       return {
         household,
         activity,
