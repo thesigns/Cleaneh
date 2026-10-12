@@ -7,7 +7,7 @@
 // A test checks the block is up to date.
 
 // <stamp>
-const VERSION = '3f4ee9e0dc15';
+const VERSION = '8ceced9ccc0e';
 const FILES = [
   'assets/fonts/OFL.txt',
   'assets/fonts/nunito.woff2',
@@ -18,6 +18,7 @@ const FILES = [
   'assets/icons/app-maskable.svg',
   'assets/icons/app.svg',
   'assets/icons/apple-touch-icon.png',
+  'assets/icons/sprite.svg',
   'index.html',
   'manifest.webmanifest',
   'src/core/catalog-data.js',
@@ -38,8 +39,18 @@ const FILES = [
   'src/engine/lock.js',
   'src/main.js',
   'src/ui/app.css',
+  'src/ui/areas.js',
+  'src/ui/blob.js',
+  'src/ui/components.css',
+  'src/ui/components.js',
+  'src/ui/deck.js',
+  'src/ui/dom.js',
   'src/ui/i18n/catalog-en.js',
   'src/ui/i18n/catalog-pl.js',
+  'src/ui/i18n/en.js',
+  'src/ui/i18n/index.js',
+  'src/ui/i18n/pl.js',
+  'src/ui/icons.js',
   'src/ui/service-worker.js',
   'src/ui/theme.css',
 ];

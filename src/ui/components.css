@@ -1,0 +1,428 @@
+/* Components: icons, blobs, pills, buttons, answer buttons, the card deck, question and walk cards. */
+
+/* --- icons and blobs --- */
+
+.icon {
+  width: var(--icon-size, 1.5rem);
+  height: var(--icon-size, 1.5rem);
+  flex: none;
+}
+
+.blob {
+  --blob: var(--area-container);
+  --blob-icon: var(--area);
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--blob-size);
+  height: var(--blob-size);
+  flex: none;
+}
+
+.blob__shape {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.blob__halo {
+  fill: var(--blob);
+  opacity: 0.5;
+}
+
+.blob__front {
+  fill: var(--blob);
+}
+
+.blob__icon {
+  position: relative;
+  --icon-size: calc(var(--blob-size) * 0.47);
+  color: var(--blob-icon);
+}
+
+/* On a colored fill: a white blob with the icon in the fill's color. */
+.blob--white {
+  --blob: #ffffff;
+  --blob-icon: var(--area-fill-bottom);
+}
+
+/* --- pills, progress --- */
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: 100%;
+  padding: 0.375rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.pill > span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pill__icon {
+  --icon-size: 1rem;
+}
+
+.pill--neutral {
+  background: var(--surface-container-high);
+  color: var(--on-surface-variant);
+}
+
+.pill--area {
+  background: var(--area-container);
+  color: var(--area);
+}
+
+.pill--glass {
+  background: rgb(255 255 255 / 0.22);
+  color: #ffffff;
+}
+
+.progress {
+  height: 0.375rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-variant) 70%, transparent);
+  overflow: hidden;
+}
+
+.progress__bar {
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+  transform-origin: left;
+  transition: transform 500ms cubic-bezier(0.34, 1.3, 0.64, 1);
+}
+
+/* --- buttons --- */
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  min-height: 3.625rem;
+  padding: 0.75rem 1.5rem;
+  border: 0;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 1rem;
+  line-height: 1.5rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 120ms ease, filter 120ms ease;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+.button--filled {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+
+.button--area {
+  background: var(--area);
+  color: var(--on-area);
+  min-height: 3.75rem;
+}
+
+.button--tonal {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+.button--text {
+  width: auto;
+  min-height: 3rem;
+  background: none;
+  color: var(--primary);
+}
+
+.icon-button {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  border: 0;
+  border-radius: 50%;
+  background: none;
+  color: var(--on-background);
+  cursor: pointer;
+}
+
+.icon-button:active {
+  background: var(--surface-container-high);
+}
+
+.icon-button:disabled,
+.button:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+:focus-visible {
+  outline: 3px solid var(--primary);
+  outline-offset: 2px;
+}
+
+/* --- answer tones --- */
+
+.tone-yes { --tone: var(--yes); --tone-container: var(--yes-container); --on-tone: var(--on-yes); }
+.tone-no { --tone: var(--no); --tone-container: var(--no-container); --on-tone: var(--on-no); }
+.tone-na { --tone: var(--not-applicable); --tone-container: var(--not-applicable-container); --on-tone: var(--on-not-applicable); }
+.tone-later { --tone: var(--not-now); --tone-container: var(--not-now-container); --on-tone: var(--on-not-now); }
+
+/* --- answer buttons: grow and fill as the card is dragged towards them --- */
+
+.answers {
+  /* Two rows shared by all buttons: circles on one line, labels under them, even when a label wraps. */
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 6rem);
+  grid-template-rows: auto auto;
+  justify-content: space-evenly;
+  column-gap: 0.5rem;
+  row-gap: 0.5rem;
+  padding: 0 1rem;
+}
+
+.answer {
+  --emphasis: 0;
+  display: grid;
+  grid-row: span 2;
+  grid-template-rows: subgrid;
+  justify-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: var(--tone);
+  cursor: pointer;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.answer__circle {
+  align-self: end;
+  display: grid;
+  place-items: center;
+  width: var(--answer-size);
+  height: var(--answer-size);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--tone) calc(var(--emphasis) * 100%), var(--tone-container));
+  color: color-mix(in srgb, var(--on-tone) calc(var(--emphasis) * 100%), var(--tone));
+  box-shadow: 0 calc(0.125rem + var(--emphasis) * 0.5rem) calc(0.375rem + var(--emphasis) * 1rem) color-mix(in srgb, var(--tone) 35%, transparent);
+  transform: scale(calc(1 + 0.14 * var(--emphasis)));
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.answer:active .answer__circle {
+  transform: scale(0.9);
+}
+
+.answer--large { --answer-size: min(4.25rem, 19vw); }
+.answer--small { --answer-size: min(3.375rem, 15vw); }
+
+.answer__icon {
+  --icon-size: calc(var(--answer-size) * 0.42);
+}
+
+.answer__label {
+  align-self: start;
+  font-size: 0.75rem;
+  line-height: 1rem;
+  font-weight: 700;
+  text-align: center;
+  text-wrap: balance;
+}
+
+.answer:disabled {
+  cursor: default;
+}
+
+/* --- the card deck --- */
+
+.deck {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  max-height: 37.5rem;
+}
+
+.card {
+  position: absolute;
+  inset: 0;
+  border-radius: 2rem;
+  background: var(--card);
+  box-shadow: 0 0.5rem 1.75rem -0.5rem color-mix(in srgb, var(--area) 35%, transparent), 0 0.125rem 0.375rem var(--shadow);
+}
+
+.card--back {
+  background: var(--card-back);
+  box-shadow: 0 0.25rem 0.75rem -0.25rem color-mix(in srgb, var(--area) 30%, transparent);
+}
+
+.card--front {
+  overflow: hidden;
+  touch-action: none;
+  -webkit-user-select: none;
+  user-select: none;
+  cursor: grab;
+  transform-origin: 50% 80%;
+  /* A tinted glow at the top of a white card. */
+  background-image: linear-gradient(to bottom, color-mix(in srgb, var(--area-container) 55%, transparent), transparent 45%);
+}
+
+.card--dragging {
+  cursor: grabbing;
+}
+
+.card--fill {
+  background: linear-gradient(to bottom, var(--area-fill-top), var(--area-fill-bottom));
+}
+
+.card__content {
+  position: absolute;
+  inset: 0;
+  padding: 1.5rem;
+}
+
+.stamp {
+  position: absolute;
+  padding: 0.25rem 0.875rem;
+  border: 3px solid var(--tone);
+  border-radius: 0.875rem;
+  background: color-mix(in srgb, var(--tone-container) 85%, transparent);
+  color: var(--tone);
+  font-size: 1.5rem;
+  line-height: 2rem;
+  font-weight: 800;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.stamp--right { top: 6rem; left: 1.75rem; }
+.stamp--left { top: 6rem; right: 1.75rem; }
+.stamp--up { bottom: 2.75rem; left: 50%; translate: -50% 0; }
+.stamp--down { top: 6rem; left: 50%; translate: -50% 0; }
+
+/* --- question card --- */
+
+.question-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.card-chips {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* With a long name or a large font the time goes to the next line; only a name longer than the card is cut. */
+.card-chips > .pill {
+  min-width: 0;
+}
+
+.question-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  /* A little above the middle, like weights 1 : 1.2. */
+  padding-bottom: 10%;
+  text-align: center;
+}
+
+.question-card__label {
+  margin: 0 0 0.375rem;
+  color: var(--on-surface-variant);
+}
+
+.question-card__text {
+  margin: 0;
+  padding: 0 0.25rem;
+  color: var(--on-background);
+  overflow-wrap: anywhere;
+}
+
+/* --- card for walking over to a room --- */
+
+.move-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.875rem;
+  height: 100%;
+  padding-bottom: 8%;
+  color: #ffffff;
+  text-align: center;
+}
+
+.move-card__head {
+  margin: 0;
+  opacity: 0.88;
+}
+
+.move-card__blob {
+  margin: 0.25rem 0;
+}
+
+.move-card__name {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+/* On a short screen or with a large font the decoration shrinks first (12.7). */
+@media (max-height: 640px) {
+  .move-card__blob { --blob-size: 7rem !important; }
+}
+
+/* --- screen around a deck: the area's glow, leaning towards an answer while dragging --- */
+
+.screen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: linear-gradient(to bottom, var(--area-container), var(--background) 62%);
+  transition: background-color 500ms ease;
+}
+
+.screen--moving {
+  background: var(--area-container);
+}
+
+.screen__lean {
+  position: absolute;
+  inset: 0;
+  background: var(--lean, transparent);
+  opacity: var(--lean-amount, 0);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .progress__bar,
+  .answer__circle,
+  .button {
+    transition-duration: 1ms;
+  }
+}

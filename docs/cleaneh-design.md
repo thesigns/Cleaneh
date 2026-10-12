@@ -219,7 +219,7 @@ Zadania, które nie mieszczą się w ok. 15 minutach (mycie okien, pranie zasło
 
 ### 7.4. Ikony
 
-Własny, spójny zestaw ikon pomieszczeń, grup, sprzętów i interfejsu, przejęty z Cleanerr. Źródła w `design/icons/*.svg` (siatka 24×24, kontur 1,75 z zaokrąglonymi końcami, drugi ton jako półprzezroczyste wypełnienie). W apce używane bezpośrednio jako SVG, bez konwersji; kolor przez `currentColor`, więc ikona działa w każdym motywie i kolorze pomieszczenia. Nowe ikony i zmiany najpierw w źródłach, z podglądem przed wrzuceniem do apki.
+Własny, spójny zestaw ikon pomieszczeń, grup, sprzętów i interfejsu, przejęty z Cleanerr. Źródła w `design/icons/*.svg` (siatka 24×24, kontur 1,75 z zaokrąglonymi końcami, drugi ton jako półprzezroczyste wypełnienie). W apce jako jeden arkusz SVG (`assets/icons/sprite.svg`, symbol na ikonę), który skrypt składa ze źródeł bez zmiany rysunku (klasy zamienione na atrybuty, warstwy jak w Cleanerr); kolor przez `currentColor`, więc ikona działa w każdym motywie i kolorze pomieszczenia. Nowe ikony i zmiany najpierw w źródłach, z podglądem przed wrzuceniem do apki.
 
 ### 7.5. Pomieszczenia
 

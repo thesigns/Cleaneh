@@ -2,14 +2,14 @@
 
 PWA (apka webowa do zainstalowania na ekranie głównym, przede wszystkim telefony), która zadaje pytania o stan konkretnych miejsc w mieszkaniu i proponuje krótkie zadania sprzątania ze stoperem. Następca Cleanerr (natywny Android), bez powiadomień: apka czeka, aż użytkownik ją otworzy.
 
-Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Następny: krok 4, wygląd (motyw, kolory, krój, ikony, plamy, karty z gestami, przyciski odpowiedzi, i18n).
+Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Krok 4 (wygląd) zrobiony jako klocki w `src/ui` i galeria `dev/gallery.html`; ekrany apki jeszcze nie istnieją. Następny: krok 5, Obchód.
 
 ## Dokumenty
 
 - `docs/cleaneh-design.md` — główna specyfikacja. Źródło prawdy dla zachowania apki.
 - `docs/cleaneh-questions.md` — katalog pytań (zaakceptowany): teksty PL/EN, zadania PL/EN, czas, interwał, priorytet, sezon, wymagany sprzęt, etap generalnych porządków, ★ (pierwszy Obchód), zestaw; na końcu przełączniki i rodzaje pomieszczeń z zestawami. **Zmiany treści, czasów, interwałów czy zestawów tylko po akceptacji użytkownika.**
 - Zmiana zachowania apki najpierw w specyfikacji, potem w kodzie. Rozbieżność między kodem a specyfikacją zgłaszaj, nie rozstrzygaj po cichu.
-- Ikony: źródła w `design/icons/*.svg` (siatka 24×24, kontur 1,75, drugi ton jako półprzezroczyste wypełnienie), w apce bezpośrednio jako SVG z `currentColor`. Nowe ikony i zmiany najpierw w źródłach, z podglądem.
+- Ikony: źródła w `design/icons/*.svg` (siatka 24×24, kontur 1,75, drugi ton jako półprzezroczyste wypełnienie). `node tools/icon-sprite.mjs` składa je w `assets/icons/sprite.svg` (test pilnuje aktualności); w apce `icon(name)` z `src/ui/icons.js` po `loadIcons()`. Nowe ikony i zmiany najpierw w źródłach, podgląd w galerii.
 
 ## Wzorzec: Cleanerr
 
@@ -30,6 +30,10 @@ Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem 
 - **`src/data`** — IndexedDB przez cienką nakładkę na obietnicach, zapis tylko zmian. Bieżąca aktywność i Obchód w toku jako JSON z dyskryminatorem `kind`. Obszar jako tekst `room#3` / `group#LAUNDRY`.
 - **`src/engine`** — jedyne miejsce, które zmienia stan: wczytaj, wywołaj `core`, zapisz. Kolejka także między kartami (`navigator.locks`), potem sygnał dla innych kart (`BroadcastChannel`).
 - **`src/ui`** — ekrany i komponenty na DOM, motyw, teksty z plików tłumaczeń. Bez własnej logiki decyzyjnej.
+  - `dom.js` (`h()` do budowania elementów; zmienne CSS w `style` przez `setProperty`), `icons.js`, `blob.js` (plama pod ikoną, jedna pętla animacji), `areas.js` (kolor, ikona i ziarno obszaru; `paintArea` ustawia zmienne `--area-*` obu motywów, element dostaje klasę `area`), `deck.js` (stos kart z gestami), `components.js` (pigułki, przyciski, przyciski odpowiedzi, karta pytania, karta przejścia).
+  - Style: `theme.css` (tokeny, typografia `.t-*`, ciemny motyw z systemu albo `data-theme`), `app.css`, `components.css`.
+  - Teksty: `src/ui/i18n/en.js` i `pl.js` (płaskie klucze, liczebniki jako obiekty z kategoriami `Intl.PluralRules`), `createI18n(lang)` z `i18n/index.js` (`t`, `areaName`, `questionText`, `taskText`, `collator`).
+  - Galeria `dev/gallery.html` (tylko deweloperska, poza apką): paleta, typografia, kolory, ikony i place zabaw z gestami (`?view=series|sweep|move`, `&lang=pl`, `&theme=dark`).
 - **`src/core`, moduły**: `catalog` (+ wygenerowane `catalog-data`), `home` (pomieszczenia, kolory, przełączniki), `scheduler` (pula, wagi, interwały, sezony, kalibracja), `loop` (maszyna stanów: zdarzenia `open`, `request-task`, `start-clean`, `answer`, `start`, `skip`, `stop`, `done`, `give-up`, `take`), `clean` (plan porządków), `sweep` (Obchód jako dane, cofanie przez odtworzenie odpowiedzi), `history` (ostatnie sprzątanie, wynik dnia), `time` (strefy, daty lokalne), `random` (generator z ziarnem).
 - **Dane w `core` to zwykłe obiekty JSON**: czas w milisekundach, obszar `room#3` / `group#LAUNDRY`, klucz instancji `pytanie@obszar`, stan instancji w obiekcie `household.instances`. Funkcje zwracają nowe obiekty; bez zmiany zwracają ten sam (np. `refresh`), co pozwala pominąć zapis.
 - **`tools/generate-catalog.mjs`**: z `docs/cleaneh-questions.md` tworzy `src/core/catalog-data.js` oraz teksty i nazwy w `src/ui/i18n/catalog-{en,pl}.js`. Po zmianie katalogu uruchom generator (`node tools/generate-catalog.mjs`), potem stamp. Wygenerowanych plików nie edytuj ręcznie; test sprawdza, że są aktualne.

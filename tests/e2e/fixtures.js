@@ -35,8 +35,8 @@ export async function settle(page) {
  * Saves a screenshot to screenshots/<project>/<name>.png for review.
  * Not a visual regression check: the files are only looked at.
  */
-export async function shoot(page, name) {
+export async function shoot(page, name, options = {}) {
   await settle(page);
   const project = test.info().project.name;
-  await page.screenshot({ path: `screenshots/${project}/${name}.png` });
+  await page.screenshot({ path: `screenshots/${project}/${name}.png`, ...options });
 }

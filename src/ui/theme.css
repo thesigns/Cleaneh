@@ -1,4 +1,6 @@
-/* Cleaneh theme: colors from Cleanerr 1.4 (specification 13.1), Nunito. */
+/* Cleaneh theme: colors and type from Cleanerr 1.4 (specification 13.1).
+ * The theme follows the system; data-theme="light" / "dark" on <html> overrides it (developer mode, 13.4).
+ * The dark tokens are written twice (system and override): CSS cannot join a media query and a selector. */
 
 @font-face {
   font-family: 'Nunito';
@@ -9,11 +11,11 @@
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
 
   --font: 'Nunito', system-ui, sans-serif;
 
-  /* Brand and surfaces, light. */
+  /* Brand and surfaces. */
   --primary: #0e7c76;
   --on-primary: #ffffff;
   --primary-container: #b8ede6;
@@ -21,14 +23,17 @@
   --background: #fbf8f3;
   --on-background: #1b2324;
   --on-surface-variant: #4a4e4d;
+  --surface-variant: #e5e1d8;
   --card: #ffffff;
+  --card-back: #ece7df;
   --surface-container-low: #f7f3ec;
   --surface-container: #f2ede5;
   --surface-container-high: #ece7df;
   --outline: #7a7e7b;
   --outline-variant: #cbc6bc;
+  --shadow: rgb(27 35 36 / 0.16);
 
-  /* Answers: color, container, text on color. */
+  /* Answers: color, container, text on color. NO is apricot, never alarm red. */
   --yes: #1c9a72;
   --yes-container: #cff5e5;
   --on-yes: #ffffff;
@@ -46,10 +51,18 @@
   --lavender-start: #9b7fe0;
   --lavender-end: #4b3c9a;
   --lavender-button: #5b45b0;
+
+  /* Area colors where no area is painted. */
+  --area: var(--primary);
+  --area-container: var(--primary-container);
+  --on-area: var(--on-primary);
+  --area-fill-top: #1fb8a6;
+  --area-fill-bottom: #0b6878;
 }
 
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme='light']) {
+    color-scheme: dark;
     --primary: #7dd6cd;
     --on-primary: #003734;
     --primary-container: #00504c;
@@ -57,13 +70,15 @@
     --background: #0f1617;
     --on-background: #dee4e3;
     --on-surface-variant: #bec8c6;
+    --surface-variant: #3f4847;
     --card: #0a1011;
+    --card-back: #252f30;
     --surface-container-low: #172021;
     --surface-container: #1b2425;
     --surface-container-high: #252f30;
     --outline: #889290;
     --outline-variant: #3f4847;
-
+    --shadow: rgb(0 0 0 / 0.5);
     --yes: #6fdcb1;
     --yes-container: #123f31;
     --on-yes: #00281b;
@@ -78,3 +93,74 @@
     --on-not-now: #101c21;
   }
 }
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --primary: #7dd6cd;
+  --on-primary: #003734;
+  --primary-container: #00504c;
+  --on-primary-container: #9df3e9;
+  --background: #0f1617;
+  --on-background: #dee4e3;
+  --on-surface-variant: #bec8c6;
+  --surface-variant: #3f4847;
+  --card: #0a1011;
+  --card-back: #252f30;
+  --surface-container-low: #172021;
+  --surface-container: #1b2425;
+  --surface-container-high: #252f30;
+  --outline: #889290;
+  --outline-variant: #3f4847;
+  --shadow: rgb(0 0 0 / 0.5);
+  --yes: #6fdcb1;
+  --yes-container: #123f31;
+  --on-yes: #00281b;
+  --no: #ffb68b;
+  --no-container: #4a2410;
+  --on-no: #3a1600;
+  --not-applicable: #c4c0ff;
+  --not-applicable-container: #2c2a4a;
+  --on-not-applicable: #1b1840;
+  --not-now: #b4c5cb;
+  --not-now-container: #26333a;
+  --on-not-now: #101c21;
+}
+
+/* An element painted with an area's colors (areas.js paintArea) picks the light or dark set. */
+.area {
+  --area: var(--area-l);
+  --area-container: var(--area-container-l);
+  --on-area: var(--on-area-l);
+  --area-fill-top: var(--area-fill-top-l);
+  --area-fill-bottom: var(--area-fill-bottom-l);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) .area {
+    --area: var(--area-d);
+    --area-container: var(--area-container-d);
+    --on-area: var(--on-area-d);
+    --area-fill-top: var(--area-fill-top-d);
+    --area-fill-bottom: var(--area-fill-bottom-d);
+  }
+}
+
+:root[data-theme='dark'] .area {
+  --area: var(--area-d);
+  --area-container: var(--area-container-d);
+  --on-area: var(--on-area-d);
+  --area-fill-top: var(--area-fill-top-d);
+  --area-fill-bottom: var(--area-fill-bottom-d);
+}
+
+/* Type scale: Nunito, extra bold headlines, bold titles and labels, medium body (Cleanerr 1.4). */
+.t-display-s { font-size: 2.25rem; line-height: 2.75rem; font-weight: 800; letter-spacing: -0.01em; }
+.t-headline-m { font-size: 1.75rem; line-height: 2.25rem; font-weight: 800; letter-spacing: -0.01em; }
+.t-headline-s { font-size: 1.5rem; line-height: 2rem; font-weight: 800; }
+.t-title-l { font-size: 1.375rem; line-height: 1.75rem; font-weight: 700; }
+.t-title-m { font-size: 1rem; line-height: 1.5rem; font-weight: 700; letter-spacing: 0.009em; }
+.t-title-s { font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; }
+.t-body-l { font-size: 1rem; line-height: 1.5rem; font-weight: 500; }
+.t-body-m { font-size: 0.875rem; line-height: 1.25rem; font-weight: 500; }
+.t-label-l { font-size: 0.875rem; line-height: 1.25rem; font-weight: 700; }
+.t-label-m { font-size: 0.75rem; line-height: 1rem; font-weight: 700; }

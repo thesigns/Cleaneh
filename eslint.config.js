@@ -17,7 +17,7 @@ export default [
   },
   // App code in the browser.
   {
-    files: ['src/**/*.js'],
+    files: ['src/**/*.js', 'dev/**/*.js'],
     ignores: ['src/core/**'],
     languageOptions: { globals: globals.browser },
   },
