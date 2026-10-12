@@ -65,6 +65,7 @@ Stan: kroki 0–1 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem 
 ## Proces pracy
 
 - Pętla: zmiana → `npm run stamp` → `npm test` (`node:test`, `tests/unit`) → `npm run lint` (ma być czysto) → `npm run e2e` (Playwright, `tests/e2e`) → telefon na koniec. Wszystko naraz: `npm run check`.
+- Ręczne testy w przeglądarce robi użytkownik, ale serwer uruchamia Claude (`npm run serve` w tle), gdy użytkownik o to poprosi albo gdy jest coś nowego do obejrzenia, i podaje adres.
 - Lokalnie: `npm run serve` (http://127.0.0.1:8080/), opcje `--port`, `--host 0.0.0.0`, `--base Cleaneh`.
 - ESLint pilnuje zasad `core`: bez globali przeglądarki i Node, bez `Date.now()`/`new Date()`/`Math.random()`, bez importów z `data`/`engine`/`ui`.
 - Zrzuty na stałych rozmiarach (projekty Playwright `redmi` 393×820, `small` 360×616, `small-130` z czcionką 130%); wybrane ekrany w ciemnym motywie i po angielsku. `shoot(page, nazwa)` z `tests/e2e/fixtures.js` zapisuje do `screenshots/<projekt>/` (poza repozytorium) — obejrzyj je po zmianach układu. Testy niezależne od rozmiaru ekranu tylko w `redmi` (`ONCE` w `playwright.config.js`). Emulacja `prefers-reduced-motion`.
