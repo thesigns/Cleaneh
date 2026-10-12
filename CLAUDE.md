@@ -2,7 +2,7 @@
 
 PWA (apka webowa do zainstalowania na ekranie głównym, przede wszystkim telefony), która zadaje pytania o stan konkretnych miejsc w mieszkaniu i proponuje krótkie zadania sprzątania ze stoperem. Następca Cleanerr (natywny Android), bez powiadomień: apka czeka, aż użytkownik ją otworzy.
 
-Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Krok 4 (wygląd) zrobiony jako klocki w `src/ui` i galeria `dev/gallery.html`; ekrany apki jeszcze nie istnieją. Następny: krok 5, Obchód.
+Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Kroki 4 (wygląd: klocki w `src/ui`, galeria `dev/gallery.html`) i 5 (Obchód) zrobione; ekran główny jest tymczasowy (tylko Obchód). Następny: krok 6, ekran główny, seria, zadanie ze stoperem, nagrody.
 
 ## Dokumenty
 
@@ -33,6 +33,9 @@ Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem 
   - `dom.js` (`h()` do budowania elementów; zmienne CSS w `style` przez `setProperty`), `icons.js`, `blob.js` (plama pod ikoną, jedna pętla animacji), `areas.js` (kolor, ikona i ziarno obszaru; `paintArea` ustawia zmienne `--area-*` obu motywów, element dostaje klasę `area`), `deck.js` (stos kart z gestami), `components.js` (pigułki, przyciski, przyciski odpowiedzi, karta pytania, karta przejścia).
   - Style: `theme.css` (tokeny, typografia `.t-*`, ciemny motyw z systemu albo `data-theme`), `app.css`, `components.css`.
   - Teksty: `src/ui/i18n/en.js` i `pl.js` (płaskie klucze, liczebniki jako obiekty z kategoriami `Intl.PluralRules`), `createI18n(lang)` z `i18n/index.js` (`t`, `areaName`, `questionText`, `taskText`, `collator`).
+  - Start apki: `src/ui/app.js` (`startApp`), silnik składa `src/engine/start.js`. Ekrany przez adres po `#` (`src/ui/router.js`): `/` ekran główny, `/sweep`, `/sweep/first`, `/sweep/area/room:3` (`#` obszaru jako `:`). Ekran może mieć `leave()` (Wstecz jak X) i `destroy()`. Arkusze (`src/ui/sheet.js`) mają własny wpis w historii, Wstecz je zamyka.
+  - Ekran Obchodu ustawia `data-step` (liczba odpowiedzi) i `data-moving` na `.screen`; testy czekają na nie, a nie na zmianę tekstu karty (szybkie kliknięcia w trakcie animacji są ignorowane).
+  - Testy apki: `tests/e2e/app.js` (`openApp`, `seedHome` z `ageDays`, bo zaraz po dodaniu pomieszczeń nic nie czeka, `stored`). Do kroku 7 przykładowe mieszkanie w apce daje przycisk w galerii.
   - Galeria `dev/gallery.html` (tylko deweloperska, poza apką): paleta, typografia, kolory, ikony i place zabaw z gestami (`?view=series|sweep|move`, `&lang=pl`, `&theme=dark`).
 - **`src/core`, moduły**: `catalog` (+ wygenerowane `catalog-data`), `home` (pomieszczenia, kolory, przełączniki), `scheduler` (pula, wagi, interwały, sezony, kalibracja), `loop` (maszyna stanów: zdarzenia `open`, `request-task`, `start-clean`, `answer`, `start`, `skip`, `stop`, `done`, `give-up`, `take`), `clean` (plan porządków), `sweep` (Obchód jako dane, cofanie przez odtworzenie odpowiedzi), `history` (ostatnie sprzątanie, wynik dnia), `time` (strefy, daty lokalne), `random` (generator z ziarnem).
 - **Dane w `core` to zwykłe obiekty JSON**: czas w milisekundach, obszar `room#3` / `group#LAUNDRY`, klucz instancji `pytanie@obszar`, stan instancji w obiekcie `household.instances`. Funkcje zwracają nowe obiekty; bez zmiany zwracają ten sam (np. `refresh`), co pozwala pominąć zapis.

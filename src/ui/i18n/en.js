@@ -34,4 +34,28 @@ export default {
   'sweep.undo': 'Undo',
   'sweep.close': 'Stop the Sweep',
   'sweep.hint': 'Swipe right for YES, left for NO, up for N/A',
+
+  'error.title': 'Cleaneh cannot open its data',
+  'error.newer': 'The data was saved by a newer version of Cleaneh. Reload the page to get it.',
+  'error.storage': 'This browser does not let Cleaneh keep data here. A private window may be the reason.',
+  'error.reload': 'Reload',
+
+  'home.sweep': 'Sweep',
+  'home.continueSweep': 'Continue the Sweep',
+  'home.continueFirstSweep': 'Continue the first Sweep',
+
+  'scope.title': 'What shall we check?',
+  'scope.home': 'The whole home',
+  'scope.due': { one: '{count} due', other: '{count} due' },
+  'scope.none': 'Nothing due',
+  'scope.close': 'Close',
+
+  'summary.title': 'Sweep done!',
+  'summary.allGood': "Everything looks good. I'll ask when it's time.",
+  'summary.nothingDue': 'Nothing is due right now. Lovely!',
+  'summary.spots': 'These spots could use a moment:',
+  'summary.remaining': { one: "{count} more thing will wait its turn. I'll ask about it.", other: "{count} more things will wait their turn. I'll ask about them." },
+  'summary.start': 'Start with the first one',
+  'summary.later': 'Later',
+  'summary.done': 'Done',
 };

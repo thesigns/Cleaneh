@@ -26,7 +26,7 @@ body {
   overscroll-behavior: none;
 }
 
-/* The app column: phone width, centered on larger screens. */
+/* The app column: phone width, centered on larger screens. Screens keep clear of notches themselves. */
 .app {
   display: flex;
   flex-direction: column;
@@ -35,11 +35,10 @@ body {
   min-height: 100vh;
   min-height: 100dvh;
   margin: 0 auto;
-  padding:
-    max(1rem, env(safe-area-inset-top))
-    max(1rem, env(safe-area-inset-right))
-    max(1rem, env(safe-area-inset-bottom))
-    max(1rem, env(safe-area-inset-left));
+}
+
+.app > * {
+  flex: 1;
 }
 
 /* Start screen of the skeleton: the app mark in the middle. */

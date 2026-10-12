@@ -7,7 +7,7 @@
 // A test checks the block is up to date.
 
 // <stamp>
-const VERSION = '8ceced9ccc0e';
+const VERSION = '51024bea2369';
 const FILES = [
   'assets/fonts/OFL.txt',
   'assets/fonts/nunito.woff2',
@@ -37,8 +37,10 @@ const FILES = [
   'src/data/store.js',
   'src/engine/engine.js',
   'src/engine/lock.js',
+  'src/engine/start.js',
   'src/main.js',
   'src/ui/app.css',
+  'src/ui/app.js',
   'src/ui/areas.js',
   'src/ui/blob.js',
   'src/ui/components.css',
@@ -51,7 +53,12 @@ const FILES = [
   'src/ui/i18n/index.js',
   'src/ui/i18n/pl.js',
   'src/ui/icons.js',
+  'src/ui/router.js',
+  'src/ui/screens.css',
+  'src/ui/screens/home.js',
+  'src/ui/screens/sweep.js',
   'src/ui/service-worker.js',
+  'src/ui/sheet.js',
   'src/ui/theme.css',
 ];
 // </stamp>

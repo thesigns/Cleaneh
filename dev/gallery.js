@@ -43,6 +43,19 @@ function link(view, label) {
   return h('a', { href: `?${query}` }, label);
 }
 
+/** Puts the sample home into the app's own data (this address), with five days passed. */
+async function seedSampleHome() {
+  const [{ startEngine }] = await Promise.all([import('../src/engine/start.js')]);
+  const { engine } = await startEngine();
+  const { household } = await engine.snapshot();
+  if (household.home.rooms.length === 0) {
+    await engine.updateHome(() => home);
+    await engine.age(5 * 86_400_000);
+  }
+  engine.close();
+  document.getElementById('seed-note').textContent = household.home.rooms.length ? 'The app already has rooms; nothing changed.' : 'Done. Open the app and tap Sweep.';
+}
+
 function swatch(name, color) {
   return h('div', { class: 'swatch' }, h('div', { class: 'swatch__color', style: { background: `var(${color})` } }), name);
 }
@@ -54,6 +67,15 @@ function overview() {
     { class: 'gallery' },
     h('h1', { class: 't-headline-m' }, 'Cleaneh gallery'),
     h('nav', {}, link(null, 'Overview'), link('series', 'Series'), link('sweep', 'Sweep'), link('move', 'Walk card')),
+
+    h('h2', {}, 'The app'),
+    h(
+      'div',
+      { class: 'row', style: { maxWidth: '36rem' } },
+      button('Sample home in the app', seedSampleHome, { variant: 'tonal' }),
+      button('Open the app', () => (location.href = '../'), { variant: 'text' }),
+    ),
+    h('p', { class: 't-body-m', id: 'seed-note' }, 'Until the setup exists (step 7): adds the sample home below to the app on this address, with a few days passed, so a Sweep has something to ask.'),
 
     h('h2', {}, 'Palette'),
     h('div', { class: 'row' }, [
@@ -159,7 +181,7 @@ function playground(mode) {
     onThreshold: vibrate,
   });
   const buttons = answerButtons(answers, i18n, (answer) => deck.flyOut(ANSWERS[answer].direction).then((gone) => gone && answered(answer)));
-  const next = button(i18n.t('move.next'), () => deck.flyOut('up').then((gone) => gone && arrive()), { variant: 'area' });
+  const next = button(i18n.t('move.next'), () => deck.flyOut('up').then((gone) => gone && arrive()), { variant: 'area', className: 'controls__next' });
   const hint = h('p', { class: 'hint t-label-m' }, series ? '' : i18n.t('sweep.hint'));
   const controls = h('div', { class: 'controls' }, h('div', {}, buttons.element, series ? null : hint), next);
 
@@ -212,7 +234,7 @@ function playground(mode) {
 function moveView() {
   const area = homeAreas[3];
   const deck = createDeck({ onSwipe: () => {} });
-  const screen = paintArea(h('div', { class: 'screen screen--moving area playground' }, h('div', { class: 'topbar' }), h('div', { class: 'stage' }, deck.element), h('div', { class: 'controls' }, button(i18n.t('move.next'), () => {}, { variant: 'area' }))), areaHue(area, home));
+  const screen = paintArea(h('div', { class: 'screen screen--moving area playground' }, h('div', { class: 'topbar' }), h('div', { class: 'stage' }, deck.element), h('div', { class: 'controls' }, button(i18n.t('move.next'), () => {}, { variant: 'area', className: 'controls__next' }))), areaHue(area, home));
   requestAnimationFrame(() => deck.show({ content: moveCard(area, home, i18n.t('move.questions', { count: 12 }), i18n), directions: ['right', 'left', 'up', 'down'], fill: true }));
   return screen;
 }

@@ -35,4 +35,33 @@ export default {
   'sweep.undo': 'Cofnij',
   'sweep.close': 'Przerwij Obchód',
   'sweep.hint': 'W prawo: TAK, w lewo: NIE, w górę: NIE MAM',
+
+  'error.title': 'Cleaneh nie może otworzyć swoich danych',
+  'error.newer': 'Dane zapisała nowsza wersja Cleaneh. Odśwież stronę, żeby ją pobrać.',
+  'error.storage': 'Ta przeglądarka nie pozwala Cleaneh trzymać tu danych. Może to okno prywatne?',
+  'error.reload': 'Odśwież',
+
+  'home.sweep': 'Obchód',
+  'home.continueSweep': 'Dokończ Obchód',
+  'home.continueFirstSweep': 'Dokończ pierwszy Obchód',
+
+  'scope.title': 'Co obchodzimy?',
+  'scope.home': 'Całe mieszkanie',
+  'scope.due': { one: '{count} do sprawdzenia', few: '{count} do sprawdzenia', many: '{count} do sprawdzenia', other: '{count} do sprawdzenia' },
+  'scope.none': 'Nic nie czeka',
+  'scope.close': 'Zamknij',
+
+  'summary.title': 'Obchód zaliczony!',
+  'summary.allGood': 'Wszystko wygląda dobrze. Zapytam, gdy przyjdzie pora.',
+  'summary.nothingDue': 'Teraz nic nie czeka. Pięknie!',
+  'summary.spots': 'Te miejsca czekają na chwilę uwagi:',
+  'summary.remaining': {
+    one: 'Jeszcze {count} rzecz poczeka w kolejce. Będę o nią pytać.',
+    few: 'Jeszcze {count} rzeczy poczekają w kolejce. Będę o nie pytać.',
+    many: 'Jeszcze {count} rzeczy poczeka w kolejce. Będę o nie pytać.',
+    other: 'Jeszcze {count} rzeczy poczeka w kolejce. Będę o nie pytać.',
+  },
+  'summary.start': 'Zacznij od pierwszego',
+  'summary.later': 'Później',
+  'summary.done': 'Gotowe',
 };
