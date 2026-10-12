@@ -2,7 +2,7 @@
 
 PWA (apka webowa do zainstalowania na ekranie głównym, przede wszystkim telefony), która zadaje pytania o stan konkretnych miejsc w mieszkaniu i proponuje krótkie zadania sprzątania ze stoperem. Następca Cleanerr (natywny Android), bez powiadomień: apka czeka, aż użytkownik ją otworzy.
 
-Stan: kroki 0–1 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Następny: krok 2, `core` z testami.
+Stan: kroki 0–2 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Następny: krok 3, dane i silnik (IndexedDB, migracje, kolejka między kartami).
 
 ## Dokumenty
 
@@ -30,7 +30,10 @@ Stan: kroki 0–1 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem 
 - **`src/data`** — IndexedDB przez cienką nakładkę na obietnicach, zapis tylko zmian. Bieżąca aktywność i Obchód w toku jako JSON z dyskryminatorem `kind`. Obszar jako tekst `room#3` / `group#LAUNDRY`.
 - **`src/engine`** — jedyne miejsce, które zmienia stan: wczytaj, wywołaj `core`, zapisz. Kolejka także między kartami (`navigator.locks`), potem sygnał dla innych kart (`BroadcastChannel`).
 - **`src/ui`** — ekrany i komponenty na DOM, motyw, teksty z plików tłumaczeń. Bez własnej logiki decyzyjnej.
-- **`tools/`** — generator katalogu: z `docs/cleaneh-questions.md` tworzy moduły JS dla `core` i tekstów. Wygenerowanych plików nie edytuj ręcznie; test sprawdza, że są aktualne.
+- **`src/core`, moduły**: `catalog` (+ wygenerowane `catalog-data`), `home` (pomieszczenia, kolory, przełączniki), `scheduler` (pula, wagi, interwały, sezony, kalibracja), `loop` (maszyna stanów: zdarzenia `open`, `request-task`, `start-clean`, `answer`, `start`, `skip`, `stop`, `done`, `give-up`, `take`), `clean` (plan porządków), `sweep` (Obchód jako dane, cofanie przez odtworzenie odpowiedzi), `history` (ostatnie sprzątanie, wynik dnia), `time` (strefy, daty lokalne), `random` (generator z ziarnem).
+- **Dane w `core` to zwykłe obiekty JSON**: czas w milisekundach, obszar `room#3` / `group#LAUNDRY`, klucz instancji `pytanie@obszar`, stan instancji w obiekcie `household.instances`. Funkcje zwracają nowe obiekty; bez zmiany zwracają ten sam (np. `refresh`), co pozwala pominąć zapis.
+- **`tools/generate-catalog.mjs`**: z `docs/cleaneh-questions.md` tworzy `src/core/catalog-data.js` oraz teksty i nazwy w `src/ui/i18n/catalog-{en,pl}.js`. Po zmianie katalogu uruchom generator (`node tools/generate-catalog.mjs`), potem stamp. Wygenerowanych plików nie edytuj ręcznie; test sprawdza, że są aktualne.
+- **Symulacja** (`tests/unit/core/simulation.test.js`, 60 dni, profile z 13.2): raport przez `node --test --test-reporter=tap tests/unit/core/simulation.test.js`. Przy zmianach w interwałach i losowaniu sprawdź kilka ziaren, nie tylko domyślne.
 - **Service worker** (`sw.js` w katalogu głównym): lista plików apki (`index.html`, `manifest.webmanifest`, `src/`, `assets/`) i skrót ich zawartości w nazwie pamięci podręcznej, wpisywane przez `npm run stamp`. Po każdej zmianie pliku apki uruchom stamp; test sprawdza, że `sw.js` jest aktualny. Nowa wersja nigdy nie przeładowuje strony w trakcie serii, zadania, Obchodu ani porządków.
 - **Ścieżki względne** wszędzie (HTML, CSS, manifest, service worker): na GitHub Pages apka działa pod `/Cleaneh/`. Testy Playwright chodzą pod tą samą podścieżką.
 - **Schemat danych**: każda zmiana to nowa wersja z migracją i testem. Brakująca migracja ma się wywrócić z błędem, nigdy po cichu kasować danych.
