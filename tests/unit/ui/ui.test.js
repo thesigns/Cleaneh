@@ -144,3 +144,11 @@ test('the reward jingle: 1.25 s, peak at 80%, fading to silence at the end', asy
   assert.ok(Math.abs(peak - 0.8) < 1e-6, `peak ${peak}`);
   assert.equal(samples.at(-1), 0);
 });
+
+test('work time: minutes, whole hours, hours and minutes, every started minute counted', async () => {
+  const { workTime } = await import('../../../src/ui/screens/clean.js');
+  const t = createI18n('pl').t;
+  assert.equal(workTime(t, 44.2), '45 min');
+  assert.equal(workTime(t, 60), '1 h');
+  assert.equal(workTime(t, 260), '4 h 20 min');
+});

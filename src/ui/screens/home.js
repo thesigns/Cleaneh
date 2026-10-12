@@ -2,13 +2,14 @@
 // calm home with "Give me a task", a question of a series, the "Do it now?"
 // offer, or the stopwatch — and the reward after DONE.
 
+import { passed, stop } from '../../core/clean.js';
 import { areas } from '../../core/home.js';
 import { movesTo } from '../../core/loop.js';
 import { keyArea } from '../../core/scheduler.js';
 import { startedMinutes } from '../../core/time.js';
 import { areaHue, areaIcon, paintArea } from '../areas.js';
 import { iconBlob } from '../blob.js';
-import { ANSWERS, ANSWER_BY_DIRECTION, answerButtons, button, iconButton, moveCard, pill, questionCard } from '../components.js';
+import { ANSWERS, ANSWER_BY_DIRECTION, answerButtons, button, iconButton, moveCard, pill, questionCard, softProgress } from '../components.js';
 import { createDeck } from '../deck.js';
 import { choose } from '../dialog.js';
 import { h } from '../dom.js';
@@ -74,6 +75,8 @@ export async function homeScreen(ctx) {
             : idleView(snapshot);
     element.replaceChildren(view.element);
     element.dataset.mode = activity.kind;
+    element.dataset.clean = String(Boolean(activity.series?.clean));
+    return snapshot;
   }
 
   /** Sends a loop event, then shows the result; a DONE gets its reward over the next question. */
@@ -87,14 +90,61 @@ export async function homeScreen(ctx) {
       const step = await engine.send(event);
       if (step.ended && !step.ended.abandoned) local.ended = step.ended;
       local.nothingDue = step.nothingDue;
-      await refresh();
+      const { household } = await refresh();
+      // The end of a big clean beats a finished block, which beats a single task (each includes the smaller one).
       const done = step.log.find((entry) => entry.kind === 'DONE');
-      if (done) rewardFor(done);
+      if (step.ended?.clean && !step.ended.abandoned) {
+        if (step.ended.answered > 0) cleanReward(step.ended);
+      } else if (step.blockDone) blockReward(step.blockDone, household.home);
+      else if (done) rewardFor(done);
       return step;
     } finally {
       local.busy = false;
       delete element.dataset.busy;
     }
+  }
+
+  /** After a block of a big clean (4.4): lavender, with "Enough for now". */
+  async function blockReward(block, home) {
+    const isArea = block.block !== 'start' && block.block !== 'finish';
+    const choice = await showReward({
+      title: isArea ? t('reward.blockTitle', { area: i18n.areaName(block.block, home) }) : t('reward.startTitle'),
+      pills: [
+        block.tasks === 0
+          ? { text: t('reward.blockClean'), iconName: 'ui_check' }
+          : { text: t('reward.tasks', { count: block.tasks, minutes: startedMinutes(block.timeMs) }), iconName: 'ui_clock' },
+      ],
+      badge: isArea ? areaIcon(block.block, home) : 'ui_broom',
+      palette: 'lavender',
+      nextLabel: t('reward.next'),
+      enoughLabel: t('reward.enough'),
+      seed: Date.now() % 100000,
+      sound: ctx.settings.sound,
+    });
+    if (choice === 'enough') await stopIfAsking();
+  }
+
+  /** The end of a big clean: all of the plan, or stopped after at least one answer. */
+  async function cleanReward(ended) {
+    const { today } = await engine.snapshot();
+    await showReward({
+      title: t(ended.cleanFinished ? 'reward.cleanTitle' : 'reward.cleanStopped'),
+      subtitle: t('reward.cleanChecked', { count: ended.answered }),
+      pills: [
+        { text: t('reward.tasks', { count: ended.tasksDone, minutes: startedMinutes(ended.taskTimeMs) }), iconName: 'ui_clock' },
+        { text: t('home.today', { count: today.tasks, minutes: startedMinutes(today.taskTimeMs) }), iconName: 'ui_sparkles' },
+      ],
+      badge: 'ui_sparkles',
+      palette: 'lavender',
+      nextLabel: t('reward.finish'),
+      seed: Date.now() % 100000,
+      sound: ctx.settings.sound,
+    });
+  }
+
+  async function stopIfAsking() {
+    const { activity } = await engine.snapshot();
+    if (activity.kind === 'asking' || activity.kind === 'offering') await send({ kind: 'stop' });
   }
 
   async function rewardFor(done) {
@@ -114,10 +164,7 @@ export async function homeScreen(ctx) {
       seed,
       sound: ctx.settings.sound,
     });
-    if (choice === 'enough') {
-      const { activity } = await engine.snapshot();
-      if (activity.kind === 'asking' || activity.kind === 'offering') await send({ kind: 'stop' });
-    }
+    if (choice === 'enough') await stopIfAsking();
   }
 
   // --- nothing going on ---
@@ -162,13 +209,39 @@ export async function homeScreen(ctx) {
           'div',
           { class: 'home__actions' },
           button(t('home.giveTask'), () => send({ kind: 'request-task' }), { iconName: 'ui_sparkles', className: 'home__give' }),
-          sweepButton,
+          h('div', { class: 'home__row' }, sweepButton, button(t('home.clean'), () => router.navigate('/clean'), { iconName: 'ui_broom', variant: 'outlined', className: 'button--lavender-outlined' })),
         ),
       ),
     };
   }
 
   // --- a question of a series ---
+
+  /** Top of a question in a big clean: where we are, how far along, roughly how long is left, and X. */
+  function cleanBar(key, clean, household, onStop) {
+    const stage = scheduler.question(key).stage;
+    const block = stage === 'START' ? t('clean.blockStart') : stage === 'FINISH' ? t('clean.blockFinish') : i18n.areaName(keyArea(key), household.home);
+    // The question on screen counts as left.
+    const left = Math.ceil([key, ...clean.remaining].reduce((sum, k) => sum + scheduler.minutes(household, k), 0));
+    const progress = softProgress(passed(clean) / clean.total);
+    return h(
+      'header',
+      { class: 'clean-bar' },
+      h(
+        'div',
+        { class: 'clean-bar__top' },
+        h('div', { class: 'clean-bar__title' }, h('h1', { class: 't-title-m' }, block), h('p', { class: 'clean-bar__sub t-label-l' }, `${t('clean.title')} · ${t('clean.progress', { position: passed(clean) + 1, total: clean.total })}`)),
+        iconButton('ui_close', t('series.stop'), onStop),
+      ),
+      h('div', { class: 'clean-bar__progress' }, progress.element, h('span', { class: 't-label-m' }, t('clean.left', { minutes: left }))),
+    );
+  }
+
+  function topBar(snapshot, number) {
+    const { key, series } = snapshot.activity;
+    const onStop = () => send({ kind: 'stop' });
+    return series.clean ? cleanBar(key, series.clean, snapshot.household, onStop) : seriesBar(key, number, snapshot.household.home, onStop);
+  }
 
   function seriesBar(key, number, home, onStop) {
     return h(
@@ -210,7 +283,9 @@ export async function homeScreen(ctx) {
       answersBox.classList.toggle('is-hidden', moving);
       next.classList.toggle('is-hidden', !moving);
       if (moving) {
-        deck.show({ content: moveCard(area, home, null, i18n), directions: ['right', 'left', 'up', 'down'], fill: true, behind: 2 });
+        // In a big clean the walk card says how long this room takes at most (4.4); in a series nothing.
+        const detail = series.clean ? t('move.minutes', { minutes: Math.ceil(stop(series.clean, key).reduce((sum, k) => sum + scheduler.minutes(snapshot.household, k), 0)) }) : null;
+        deck.show({ content: moveCard(area, home, detail, i18n), directions: ['right', 'left', 'up', 'down'], fill: true, behind: 2 });
       } else {
         const stamps = Object.fromEntries(SERIES_ANSWERS.map((a) => [ANSWERS[a].direction, { text: t(ANSWERS[a].label), tone: ANSWERS[a].tone }]));
         deck.show({ content: questionCard(key, home, scheduler.minutes(snapshot.household, key), i18n), directions: SERIES_ANSWERS.map((a) => ANSWERS[a].direction), stamps, behind: 2, enterFrom });
@@ -240,7 +315,7 @@ export async function homeScreen(ctx) {
     }
 
     element.append(
-      seriesBar(key, series.answered + 1, home, () => send({ kind: 'stop' })),
+      topBar(snapshot, series.answered + 1),
       h('div', { class: 'stage' }, deck.element),
       h('div', { class: 'controls' }, answersBox, next),
     );
@@ -258,7 +333,7 @@ export async function homeScreen(ctx) {
       h(
         'div',
         { class: 'screen area offer' },
-        seriesBar(key, series.answered, home, () => send({ kind: 'stop' })),
+        topBar(snapshot, series.answered),
         h('div', { class: 'stage' }, h('div', { class: 'card card--static' }, h('div', { class: 'card__content' }, questionCard(key, home, scheduler.minutes(snapshot.household, key), i18n, { text: i18n.taskText(key), label: t('offer.title') })))),
         h(
           'div',

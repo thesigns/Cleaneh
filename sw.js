@@ -7,7 +7,7 @@
 // A test checks the block is up to date.
 
 // <stamp>
-const VERSION = 'd737add98b67';
+const VERSION = 'cca7219ab51f';
 const FILES = [
   'assets/fonts/OFL.txt',
   'assets/fonts/nunito.woff2',
@@ -61,6 +61,7 @@ const FILES = [
   'src/ui/rooms.js',
   'src/ui/router.js',
   'src/ui/screens.css',
+  'src/ui/screens/clean.js',
   'src/ui/screens/home.js',
   'src/ui/screens/settings.js',
   'src/ui/screens/setup.js',

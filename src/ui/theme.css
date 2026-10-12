@@ -51,6 +51,9 @@
   --lavender-start: #9b7fe0;
   --lavender-end: #4b3c9a;
   --lavender-button: #5b45b0;
+  /* Lavender as text or outline on the background, readable in both themes. */
+  --lavender-on-bg: #5b45b0;
+  --lavender-container: #e9e2ff;
 
   /* Area colors where no area is painted. */
   --area: var(--primary);
@@ -91,6 +94,8 @@
     --not-now: #b4c5cb;
     --not-now-container: #26333a;
     --on-not-now: #101c21;
+    --lavender-on-bg: #c9b8ff;
+    --lavender-container: #2f2758;
   }
 }
 
@@ -124,6 +129,8 @@
   --not-now: #b4c5cb;
   --not-now-container: #26333a;
   --on-not-now: #101c21;
+  --lavender-on-bg: #c9b8ff;
+  --lavender-container: #2f2758;
 }
 
 /* An element painted with an area's colors (areas.js paintArea) picks the light or dark set. */
