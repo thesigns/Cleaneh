@@ -57,7 +57,9 @@ export async function startApp(root) {
     engine,
     scheduler,
     i18n,
-    haptics: () => settings.sound && navigator.vibrate?.(10),
+    /** The settings as loaded; screens that change them update this too. */
+    settings,
+    haptics: () => ctx.settings.sound && navigator.vibrate?.(10),
     router: null,
   };
   ctx.router = createRouter(root, (path) => screenFor(ctx, path));

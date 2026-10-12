@@ -20,11 +20,11 @@ test('after the first load the app opens without network', async ({ page, contex
   await context.setOffline(true);
   await page.reload();
 
-  await expect(page.getByRole('heading', { name: 'Cleaneh' })).toBeVisible();
+  await expect(page.locator('.home__name')).toHaveText('Cleaneh');
   await settle(page);
   const offline = await page.evaluate(() => ({
     font: document.fonts.check('700 1rem Nunito'),
-    icon: document.querySelector('.splash__icon').naturalWidth > 0,
+    icon: document.querySelector('.home__logo').naturalWidth > 0,
     styled: getComputedStyle(document.body).backgroundColor,
   }));
   expect(offline.font).toBe(true);
@@ -39,7 +39,7 @@ test('a link with a query string opens the cached app offline', async ({ page, c
   await context.setOffline(true);
   await page.goto('./?source=homescreen');
 
-  await expect(page.getByRole('heading', { name: 'Cleaneh' })).toBeVisible();
+  await expect(page.locator('.home__name')).toHaveText('Cleaneh');
 });
 
 test('the service worker caches every app file under the current version', async ({ page }) => {

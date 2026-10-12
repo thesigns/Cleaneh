@@ -64,4 +64,45 @@ export default {
   'summary.start': 'Zacznij od pierwszego',
   'summary.later': 'Później',
   'summary.done': 'Gotowe',
+
+  'home.giveTask': 'Daj mi zadanie',
+  'home.quietTitle': 'Na razie spokój',
+  'home.quietText': 'Masz chwilę? Znajdę coś małego.',
+  'home.allDoneTitle': 'Wszystko ogarnięte',
+  'home.allDoneText': 'Teraz nic nie czeka. Może szybki Obchód?',
+  'home.endOfDay': 'Koniec na dziś. Pięknie!',
+  'home.seriesDone': 'Dobra robota!',
+  'home.today': {
+    one: 'Dziś: {count} zadanie · {minutes} min',
+    few: 'Dziś: {count} zadania · {minutes} min',
+    many: 'Dziś: {count} zadań · {minutes} min',
+    other: 'Dziś: {count} zadania · {minutes} min',
+  },
+
+  'last.justNow': 'Ostatnie sprzątanie: przed chwilą',
+  'last.hours': 'Ostatnie sprzątanie: {hours} temu',
+  'last.days': 'Ostatnie sprzątanie: {days} temu',
+  'last.daysHours': 'Ostatnie sprzątanie: {days} i {hours} temu',
+  'last.long': 'Miło znowu widzieć. Zacznijmy od czegoś małego.',
+  'unit.hours': { one: '{count} godzinę', few: '{count} godziny', many: '{count} godzin', other: '{count} godziny' },
+  'unit.days': { one: '{count} dzień', few: '{count} dni', many: '{count} dni', other: '{count} dnia' },
+
+  'series.question': 'Pytanie {number}',
+
+  'offer.title': 'Zrobić to teraz?',
+  'offer.start': 'Start',
+  'offer.notNow': 'Nie teraz',
+
+  'na.title': 'Wyłączyć to pytanie?',
+  'na.question': '„{question}”',
+  'na.text': 'Nie będę już o to pytać.',
+  'na.keep': 'Zostaw',
+  'na.turnOff': 'Wyłącz',
+
+  'timer.done': 'ZROBIONE',
+  'timer.giveUp': 'Odpuszczam',
+
+  'reward.praise': 'Zrobione!|Brawo!|Pięknie!|Czyściutko!|Super robota!|Ekstra!|Tak trzymać!',
+  'reward.next': 'Dalej',
+  'reward.enough': 'Na razie wystarczy',
 };

@@ -4,7 +4,7 @@ for (const colorScheme of ['light', 'dark']) {
   test(`start screen, ${colorScheme}`, async ({ page }) => {
     await page.emulateMedia({ colorScheme });
     await page.goto('./');
-    await expect(page.getByRole('heading', { name: 'Cleaneh' })).toBeVisible();
+    await expect(page.locator('.home__name')).toHaveText('Cleaneh');
     await shoot(page, `start-${colorScheme}`);
   });
 }

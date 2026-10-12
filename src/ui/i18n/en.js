@@ -58,4 +58,40 @@ export default {
   'summary.start': 'Start with the first one',
   'summary.later': 'Later',
   'summary.done': 'Done',
+
+  'home.giveTask': 'Give me a task',
+  'home.quietTitle': 'All quiet for now',
+  'home.quietText': "Got a minute? I'll find something small.",
+  'home.allDoneTitle': 'All tidy',
+  'home.allDoneText': 'Nothing is due right now. How about a quick Sweep?',
+  'home.endOfDay': "That's it for today. Lovely!",
+  'home.seriesDone': 'Nice work!',
+  'home.today': { one: 'Today: {count} task · {minutes} min', other: 'Today: {count} tasks · {minutes} min' },
+
+  'last.justNow': 'Last cleaning: just now',
+  'last.hours': 'Last cleaning: {hours} ago',
+  'last.days': 'Last cleaning: {days} ago',
+  'last.daysHours': 'Last cleaning: {days} and {hours} ago',
+  'last.long': "Nice to see you again. Let's start with something small.",
+  'unit.hours': { one: '{count} hour', other: '{count} hours' },
+  'unit.days': { one: '{count} day', other: '{count} days' },
+
+  'series.question': 'Question {number}',
+
+  'offer.title': 'Do it now?',
+  'offer.start': 'Start',
+  'offer.notNow': 'Not now',
+
+  'na.title': 'Turn this question off?',
+  'na.question': '“{question}”',
+  'na.text': "I won't ask about this again.",
+  'na.keep': 'Keep it',
+  'na.turnOff': 'Turn off',
+
+  'timer.done': 'DONE',
+  'timer.giveUp': "I'll pass",
+
+  'reward.praise': 'Done!|Bravo!|Lovely!|Spotless!|Great job!|Brilliant!|Keep it up!',
+  'reward.next': 'Next',
+  'reward.enough': "That's enough for now",
 };

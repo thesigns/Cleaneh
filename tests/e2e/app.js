@@ -50,3 +50,31 @@ export function stored(page) {
     return { ...state, history };
   });
 }
+
+/**
+ * Changes what is stored, as if time had passed or history existed. `change(state, arg)` runs in the page with
+ * the loaded state and returns a commit for the store (see src/data/store.js), or null.
+ */
+export async function editStored(page, change, arg = null) {
+  await page.evaluate(
+    async ({ source, arg }) => {
+      const { openStore } = await import('./src/data/store.js');
+      const store = await openStore();
+      const state = await store.load();
+      const commit = new Function('state', 'arg', `return (${source})(state, arg);`)(state, arg);
+      if (commit) await store.commit(commit);
+      store.close();
+    },
+    { source: change.toString(), arg },
+  );
+}
+
+/** Deletes everything stored, like "Start over". */
+export async function resetStored(page) {
+  await page.evaluate(async () => {
+    const { openStore } = await import('./src/data/store.js');
+    const store = await openStore();
+    await store.reset();
+    store.close();
+  });
+}

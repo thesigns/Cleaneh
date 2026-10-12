@@ -116,3 +116,31 @@ test('a blob is a closed smooth curve inside its box', () => {
   assert.match(d, /^M[\d.]+ [\d.]+(C[\d. ]+){8}Z$/);
   for (const n of d.match(/[\d.]+/g).map(Number)) assert.ok(n >= 0 && n <= 100, `${n} outside the box`);
 });
+
+test('the home screen line: today first, then the last cleaning without minutes (5.1)', async () => {
+  const { pastLine, stopwatchText } = await import('../../../src/ui/screens/home.js');
+  const pl = createI18n('pl');
+  const none = { tasks: 0, taskTimeMs: 0 };
+  assert.equal(pastLine(pl, none, { kind: 'never' }), null);
+  assert.equal(pastLine(pl, none, { kind: 'just-now' }).text, 'Ostatnie sprzątanie: przed chwilą');
+  assert.equal(pastLine(pl, none, { kind: 'hours', hours: 1 }).text, 'Ostatnie sprzątanie: 1 godzinę temu');
+  assert.equal(pastLine(pl, none, { kind: 'hours', hours: 5 }).text, 'Ostatnie sprzątanie: 5 godzin temu');
+  assert.equal(pastLine(pl, none, { kind: 'hours', hours: 22 }).text, 'Ostatnie sprzątanie: 22 godziny temu');
+  assert.equal(pastLine(pl, none, { kind: 'days', days: 1, hours: 23 }).text, 'Ostatnie sprzątanie: 1 dzień i 23 godziny temu');
+  assert.equal(pastLine(pl, none, { kind: 'days', days: 3, hours: 0 }).text, 'Ostatnie sprzątanie: 3 dni temu');
+  assert.equal(pastLine(pl, none, { kind: 'long' }).text, 'Miło znowu widzieć. Zacznijmy od czegoś małego.');
+  assert.equal(pastLine(pl, { tasks: 2, taskTimeMs: 13 * 60_000 + 5000 }, { kind: 'just-now' }).text, 'Dziś: 2 zadania · 14 min');
+  assert.equal(pastLine(createI18n('en'), none, { kind: 'days', days: 2, hours: 1 }).text, 'Last cleaning: 2 days and 1 hour ago');
+  assert.equal(stopwatchText(247), '4:07');
+  assert.equal(stopwatchText(3735), '1:02:15');
+  assert.equal(stopwatchText(-3), '0:00');
+});
+
+test('the reward jingle: 1.25 s, peak at 80%, fading to silence at the end', async () => {
+  const { synthesize } = await import('../../../src/ui/sound.js');
+  const samples = synthesize(44_100);
+  assert.equal(samples.length, Math.floor(44_100 * 1.25));
+  const peak = samples.reduce((max, v) => Math.max(max, Math.abs(v)), 0);
+  assert.ok(Math.abs(peak - 0.8) < 1e-6, `peak ${peak}`);
+  assert.equal(samples.at(-1), 0);
+});

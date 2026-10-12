@@ -269,7 +269,7 @@ Użytkownik sam dodaje pomieszczenia, które sprząta: w kreatorze (10) i w usta
 ### 7.6. Pytania poza pomieszczeniami
 
 - Pralka, komputer, samochód, dziecko czy zwierzę są zwykle jedne na mieszkanie, więc ich pytania nie są przypisane do pomieszczenia ani powielane.
-- Grupy: Pranie, Komputer i drobna elektronika, Sprzęt do sprzątania, Klimatyzacja i powietrze, Samochód, Dziecko, Zwierzęta. Etykietą na karcie jest nazwa grupy.
+- Grupy: Pranie, Komputer i drobna elektronika, Sprzęt do sprzątania, Klimatyzacja i powietrze, Samochód, Dziecko, Zwierzęta. Etykietą na karcie jest nazwa grupy w krótszej postaci, jak w Cleanerr (np. „Komputer i elektronika”, EN „Computer & devices”, „Kids”); przełączniki mają pełne nazwy z katalogu.
 - **Przełączniki** (krok "Sprzęty i domownicy" w kreatorze, 10, i ustawienia): lista z ikonami, na start wszystko wyłączone. Każda grupa ma swój przełącznik, żadna nie jest obowiązkowa. Obok jest zmywarka, od której zależą pytania w kuchni.
 - Przełączniki mogą być zagnieżdżone; podrzędny widać dopiero po włączeniu nadrzędnego: Pranie → Pralka, Komputer i drobna elektronika → Komputer, Sprzęt do sprzątania → Robot sprzątający, Klimatyzacja i powietrze → Klimatyzacja, Nawilżacz powietrza, Oczyszczacz powietrza, Zwierzęta → Kot, Pies, Zwierzę w klatce, Akwarium, Dziecko → Niemowlę.
 - Pytanie jest aktywne, gdy włączona jest jego grupa (jeśli ma grupę) i sprzęt lub cecha, której wymaga (jeśli wymaga).

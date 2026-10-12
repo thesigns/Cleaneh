@@ -2,7 +2,7 @@
 
 PWA (apka webowa do zainstalowania na ekranie głównym, przede wszystkim telefony), która zadaje pytania o stan konkretnych miejsc w mieszkaniu i proponuje krótkie zadania sprzątania ze stoperem. Następca Cleanerr (natywny Android), bez powiadomień: apka czeka, aż użytkownik ją otworzy.
 
-Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Kroki 4 (wygląd: klocki w `src/ui`, galeria `dev/gallery.html`) i 5 (Obchód) zrobione; ekran główny jest tymczasowy (tylko Obchód). Następny: krok 6, ekran główny, seria, zadanie ze stoperem, nagrody.
+Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Kroki 4 (wygląd: klocki w `src/ui`, galeria `dev/gallery.html`), 5 (Obchód) i 6 (ekran główny, seria, stoper, nagrody) zrobione; bez Porządków i Ustawień (kroki 8–9). Następny: krok 7, onboarding.
 
 ## Dokumenty
 
@@ -34,6 +34,8 @@ Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem 
   - Style: `theme.css` (tokeny, typografia `.t-*`, ciemny motyw z systemu albo `data-theme`), `app.css`, `components.css`.
   - Teksty: `src/ui/i18n/en.js` i `pl.js` (płaskie klucze, liczebniki jako obiekty z kategoriami `Intl.PluralRules`), `createI18n(lang)` z `i18n/index.js` (`t`, `areaName`, `questionText`, `taskText`, `collator`).
   - Start apki: `src/ui/app.js` (`startApp`), silnik składa `src/engine/start.js`. Ekrany przez adres po `#` (`src/ui/router.js`): `/` ekran główny, `/sweep`, `/sweep/first`, `/sweep/area/room:3` (`#` obszaru jako `:`). Ekran może mieć `leave()` (Wstecz jak X) i `destroy()`. Arkusze (`src/ui/sheet.js`) mają własny wpis w historii, Wstecz je zamyka.
+  - Ekran główny (`src/ui/screens/home.js`) pokazuje to, co robi pętla: `.home-root[data-mode]` = idle / asking / offering / timing, `data-busy` w trakcie wysyłania zdarzenia; pytanie serii ma `data-moving` (karta przejścia). Nagroda (`src/ui/reward.js`) i okno potwierdzenia (`src/ui/dialog.js`) mają własne wpisy w historii. Dźwięk nagrody (`src/ui/sound.js`) odblokowuje `unlockSound()` w obsłudze stuknięcia ZROBIONE.
+  - Testy przeglądarkowe zmieniające zapisany stan (czas startu stopera, porzucona seria, historia): `editStored`, `resetStored` z `tests/e2e/app.js`. Samego Playwrighta uruchamiaj po `npm run stamp`, inaczej service worker trzyma starą listę plików i testy offline padają.
   - Ekran Obchodu ustawia `data-step` (liczba odpowiedzi) i `data-moving` na `.screen`; testy czekają na nie, a nie na zmianę tekstu karty (szybkie kliknięcia w trakcie animacji są ignorowane).
   - Testy apki: `tests/e2e/app.js` (`openApp`, `seedHome` z `ageDays`, bo zaraz po dodaniu pomieszczeń nic nie czeka, `stored`). Do kroku 7 przykładowe mieszkanie w apce daje przycisk w galerii.
   - Galeria `dev/gallery.html` (tylko deweloperska, poza apką): paleta, typografia, kolory, ikony i place zabaw z gestami (`?view=series|sweep|move`, `&lang=pl`, `&theme=dark`).
