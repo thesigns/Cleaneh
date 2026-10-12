@@ -1,0 +1,80 @@
+/* Cleaneh theme: colors from Cleanerr 1.4 (specification 13.1), Nunito. */
+
+@font-face {
+  font-family: 'Nunito';
+  src: url('../../assets/fonts/nunito.woff2') format('woff2');
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  color-scheme: light dark;
+
+  --font: 'Nunito', system-ui, sans-serif;
+
+  /* Brand and surfaces, light. */
+  --primary: #0e7c76;
+  --on-primary: #ffffff;
+  --primary-container: #b8ede6;
+  --on-primary-container: #00201e;
+  --background: #fbf8f3;
+  --on-background: #1b2324;
+  --on-surface-variant: #4a4e4d;
+  --card: #ffffff;
+  --surface-container-low: #f7f3ec;
+  --surface-container: #f2ede5;
+  --surface-container-high: #ece7df;
+  --outline: #7a7e7b;
+  --outline-variant: #cbc6bc;
+
+  /* Answers: color, container, text on color. */
+  --yes: #1c9a72;
+  --yes-container: #cff5e5;
+  --on-yes: #ffffff;
+  --no: #db7130;
+  --no-container: #ffe2cf;
+  --on-no: #ffffff;
+  --not-applicable: #6e6a9e;
+  --not-applicable-container: #e7e4f7;
+  --on-not-applicable: #ffffff;
+  --not-now: #5f7279;
+  --not-now-container: #e3eaec;
+  --on-not-now: #ffffff;
+
+  /* Big clean lavender, the same in both themes. */
+  --lavender-start: #9b7fe0;
+  --lavender-end: #4b3c9a;
+  --lavender-button: #5b45b0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: #7dd6cd;
+    --on-primary: #003734;
+    --primary-container: #00504c;
+    --on-primary-container: #9df3e9;
+    --background: #0f1617;
+    --on-background: #dee4e3;
+    --on-surface-variant: #bec8c6;
+    --card: #0a1011;
+    --surface-container-low: #172021;
+    --surface-container: #1b2425;
+    --surface-container-high: #252f30;
+    --outline: #889290;
+    --outline-variant: #3f4847;
+
+    --yes: #6fdcb1;
+    --yes-container: #123f31;
+    --on-yes: #00281b;
+    --no: #ffb68b;
+    --no-container: #4a2410;
+    --on-no: #3a1600;
+    --not-applicable: #c4c0ff;
+    --not-applicable-container: #2c2a4a;
+    --on-not-applicable: #1b1840;
+    --not-now: #b4c5cb;
+    --not-now-container: #26333a;
+    --on-not-now: #101c21;
+  }
+}

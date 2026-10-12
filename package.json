@@ -1,0 +1,24 @@
+{
+  "name": "cleaneh",
+  "private": true,
+  "type": "module",
+  "description": "Cleaneh: a cleaning PWA that asks about the state of your home. Dev tooling only; the app itself has no dependencies.",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "serve": "node tools/serve.mjs",
+    "test": "node --test \"tests/unit/**/*.test.js\"",
+    "lint": "eslint .",
+    "e2e": "playwright test",
+    "stamp": "node tools/stamp-sw.mjs",
+    "icons": "node tools/render-icons.mjs",
+    "check": "npm run stamp && npm test && npm run lint && npm run e2e"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.64.0",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0"
+  }
+}

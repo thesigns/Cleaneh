@@ -2,7 +2,7 @@
 
 PWA (apka webowa do zainstalowania na ekranie głównym, przede wszystkim telefony), która zadaje pytania o stan konkretnych miejsc w mieszkaniu i proponuje krótkie zadania sprzątania ze stoperem. Następca Cleanerr (natywny Android), bez powiadomień: apka czeka, aż użytkownik ją otworzy.
 
-Stan: krok 0 z planu budowy (specyfikacja 14.3) zrobiony. Następny: krok 1, szkielet.
+Stan: kroki 0–1 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Następny: krok 2, `core` z testami.
 
 ## Dokumenty
 
@@ -31,7 +31,8 @@ Stan: krok 0 z planu budowy (specyfikacja 14.3) zrobiony. Następny: krok 1, szk
 - **`src/engine`** — jedyne miejsce, które zmienia stan: wczytaj, wywołaj `core`, zapisz. Kolejka także między kartami (`navigator.locks`), potem sygnał dla innych kart (`BroadcastChannel`).
 - **`src/ui`** — ekrany i komponenty na DOM, motyw, teksty z plików tłumaczeń. Bez własnej logiki decyzyjnej.
 - **`tools/`** — generator katalogu: z `docs/cleaneh-questions.md` tworzy moduły JS dla `core` i tekstów. Wygenerowanych plików nie edytuj ręcznie; test sprawdza, że są aktualne.
-- **Service worker**: numer wersji w nazwie pamięci podręcznej i lista plików apki. Wydanie to zmiana numeru; test sprawdza, że lista zgadza się z plikami. Nowa wersja nigdy nie przeładowuje strony w trakcie serii, zadania, Obchodu ani porządków.
+- **Service worker** (`sw.js` w katalogu głównym): lista plików apki (`index.html`, `manifest.webmanifest`, `src/`, `assets/`) i skrót ich zawartości w nazwie pamięci podręcznej, wpisywane przez `npm run stamp`. Po każdej zmianie pliku apki uruchom stamp; test sprawdza, że `sw.js` jest aktualny. Nowa wersja nigdy nie przeładowuje strony w trakcie serii, zadania, Obchodu ani porządków.
+- **Ścieżki względne** wszędzie (HTML, CSS, manifest, service worker): na GitHub Pages apka działa pod `/Cleaneh/`. Testy Playwright chodzą pod tą samą podścieżką.
 - **Schemat danych**: każda zmiana to nowa wersja z migracją i testem. Brakująca migracja ma się wywrócić z błędem, nigdy po cichu kasować danych.
 
 ## Wygląd
@@ -57,12 +58,16 @@ Stan: krok 0 z planu budowy (specyfikacja 14.3) zrobiony. Następny: krok 1, szk
 
 - Windows, Git Bash i PowerShell. Node LTS i npm tylko dla narzędzi deweloperskich.
 - Telefon testowy: Xiaomi Redmi Note 10 (Android 11, MIUI, Chrome). Service worker, instalacja i trwałe miejsce wymagają HTTPS albo `localhost`, więc na telefonie najprościej wdrożony podgląd.
+- Krój `assets/fonts/nunito.woff2` przekonwertowany raz z TTF Cleanerr (`fontTools`, `flavor = 'woff2'`, bez przycinania znaków). Ikony apki: źródła `assets/icons/app.svg` i `app-maskable.svg`, PNG przez `npm run icons`.
+- W Git Bash argumenty zaczynające się od `/` są zamieniane na ścieżki Windows: `--base Cleaneh`, nie `--base /Cleaneh/`.
 - Większe zmiany wielu plików najprościej skryptem z katalogu tymczasowego; heredoki w Git Bash psują się na cudzysłowach i ukośnikach.
 
 ## Proces pracy
 
-- Pętla: zmiana → testy (`node --test`) → lint (ESLint, ma być czysto) → zrzuty Playwright → telefon na koniec.
-- Zrzuty na stałych rozmiarach: 393×820 (jak Redmi), mały telefon 360×616, ten sam z czcionką 130%; wybrane ekrany w ciemnym motywie i po angielsku. W testach przeglądarkowych emulacja `prefers-reduced-motion`.
+- Pętla: zmiana → `npm run stamp` → `npm test` (`node:test`, `tests/unit`) → `npm run lint` (ma być czysto) → `npm run e2e` (Playwright, `tests/e2e`) → telefon na koniec. Wszystko naraz: `npm run check`.
+- Lokalnie: `npm run serve` (http://127.0.0.1:8080/), opcje `--port`, `--host 0.0.0.0`, `--base Cleaneh`.
+- ESLint pilnuje zasad `core`: bez globali przeglądarki i Node, bez `Date.now()`/`new Date()`/`Math.random()`, bez importów z `data`/`engine`/`ui`.
+- Zrzuty na stałych rozmiarach (projekty Playwright `redmi` 393×820, `small` 360×616, `small-130` z czcionką 130%); wybrane ekrany w ciemnym motywie i po angielsku. `shoot(page, nazwa)` z `tests/e2e/fixtures.js` zapisuje do `screenshots/<projekt>/` (poza repozytorium) — obejrzyj je po zmianach układu. Testy niezależne od rozmiaru ekranu tylko w `redmi` (`ONCE` w `playwright.config.js`). Emulacja `prefers-reduced-motion`.
 - Tryb deweloperski (specyfikacja 13.4) tylko w wersji deweloperskiej (serwer deweloperski, podglądy wdrożeń), nigdy w produkcyjnej.
 - Małe kroki, commit po każdym działającym etapie. **`git push` i wdrożenie produkcyjne tylko na wyraźne polecenie użytkownika.**
 - Projekt zamknięty, prywatne repozytorium. Bez pliku LICENSE i bez nagłówków licencyjnych w kodzie (licencja kroju Nunito dołączona do apki to co innego).

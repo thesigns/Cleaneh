@@ -342,7 +342,7 @@ Cleaneh nie ma powiadomień (2, 3). Zamiast rozdziału o powiadomieniach i ich n
 ### 9.2. Offline i aktualizacje
 
 - Service worker trzyma całą apkę (kod, krój, ikony) w pamięci podręcznej. Po pierwszym wczytaniu apka działa bez internetu.
-- Wersja apki jest w service workerze (numer w nazwie pamięci podręcznej, lista plików). Wydanie nowej wersji to zmiana tego numeru; bez kroku budowania łatwo o to zapomnieć, więc test sprawdza, że lista plików w service workerze zgadza się z plikami apki.
+- Wersja apki jest w service workerze: lista plików apki i skrót ich zawartości w nazwie pamięci podręcznej. Wpisuje je skrypt z `tools/` (`npm run stamp`), więc każda zmiana pliku apki to nowa wersja. Bez kroku budowania łatwo o to zapomnieć, dlatego test sprawdza, że lista i skrót zgadzają się z plikami apki.
 - Nowa wersja pobiera się w tle i włącza przy następnym otwarciu apki, bez pytania użytkownika. Nigdy w trakcie serii, zadania, Obchodu ani porządków.
 - Zmiana schematu danych to nowa wersja schematu z migracją (13.3).
 
@@ -449,12 +449,12 @@ Ciepły, krótki, z lekkim humorem, nigdy oceniający ani zawstydzający. W obu 
 
 - **Vanilla JS.** Czysty JavaScript (moduły ES, `<script type="module">`), HTML i CSS. Bez frameworka, bez TypeScriptu, bez bundlera i bez kroku budowania: pliki z repozytorium są dokładnie tym, co dostaje przeglądarka.
 - **UI:** własne, małe komponenty na DOM (funkcje tworzące elementy i odświeżające je ze stanu). Animacje przez przejścia i animacje CSS oraz Web Animations API, gesty kart przez Pointer Events, konfetti na `<canvas>`, dźwięk przez Web Audio.
-- **PWA:** ręcznie napisany `manifest.webmanifest` i service worker (lista plików apki z numerem wersji w nazwie pamięci podręcznej, 9.2).
+- **PWA:** ręcznie napisany `manifest.webmanifest` i service worker (lista plików apki ze skrótem zawartości w nazwie pamięci podręcznej, 9.2).
 - **Dane:** IndexedDB przez własną, cienką nakładkę na obietnicach.
 - **Biblioteki w apce:** żadnych. Wyjątek tylko z uzasadnieniem w specyfikacji.
 - **Narzędzia tylko deweloperskie** (nie trafiają do apki): Node w wersji LTS, testy jednostkowe na wbudowanym `node:test` (bez zależności), Playwright do przebiegów w przeglądarce i zrzutów ekranu, prosty serwer plików do pracy lokalnej, ESLint. Lint ma być czysty.
 - **Typy i dokumentacja:** komentarze JSDoc przy modelu danych i publicznych funkcjach `core`.
-- **Hosting:** statyczny, przez HTTPS (np. Cloudflare Pages albo Netlify; GitHub Pages przy publicznym repozytorium). Wybór przy pierwszym wdrożeniu.
+- **Hosting:** GitHub Pages (statyczny, przez HTTPS). Apka działa pod podścieżką (`…github.io/Cleaneh/`), więc wszystkie ścieżki w apce, manifeście i service workerze są względne.
 - **Przeglądarki:** Chrome na Androidzie (główny cel), Safari na iOS 16.4+, aktualne Chrome, Firefox, Safari i Edge na komputerze (układ wyśrodkowany, szerokość telefonu).
 - **Rozmiar:** cała apka z krojem i ikonami najwyżej kilka MB; kod rzędu kilkudziesięciu kB po kompresji.
 
@@ -649,7 +649,6 @@ Tylko w wersji deweloperskiej (serwer deweloperski i podglądy wdrożeń); w wer
 - Czy bez przypomnień apka nie pójdzie w zapomnienie? Ocena po kilku tygodniach używania; ewentualnie przypomnienia z 16.
 - "Ostatnie sprzątanie": czy dokładność (dni i godziny, bez minut) i próg 7 dni dobrze się sprawdzają.
 - Eksport i import: już w MVP czy zaraz po nim?
-- Hosting — decyzja przy pierwszym wdrożeniu (krok 1).
 - Zapomniany stoper: zamknięcie jak "Odpuszczam" (jak w Cleanerr) czy pytanie "Zrobione?" przy otwarciu?
 - Interwały bazowe z katalogu zakładają dla typowego mieszkania ok. 30 zadań i ponad 2 godziny sprzątania dziennie. Uczenie dopasowuje je do tego, jak szybko miejsca się brudzą, a nie do tego, ile czasu ktoś chce sprzątać. Czy dodać ogólne "tempo"? Warianty: bez tempa (ważenie dba o najważniejsze), mnożnik terminów niezależny od uczenia (rekomendowany, jeśli tempo okaże się potrzebne), dzienny budżet czasu. Decyzja po kilku tygodniach prawdziwego używania.
 - Czy Obchód na żądanie powinien opcjonalnie obejmować pytania w okresie odpoczynku?
