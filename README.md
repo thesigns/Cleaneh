@@ -11,7 +11,7 @@
 
 ---
 
-> **Status: early development.** The offline app skeleton and the decision logic (with tests and a 60-day simulation) are in place; storage and screens are being built.
+> **Status: early development.** The offline app skeleton, the decision logic (with tests and a 60-day simulation) and on-device storage with migrations are in place; the screens are being built.
 > See the [build order](docs/cleaneh-design.md#143-kolejność-budowy) in the specification.
 
 ## The idea

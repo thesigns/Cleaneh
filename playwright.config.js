@@ -3,7 +3,7 @@ import { defineConfig, devices } from '@playwright/test';
 const PORT = 4173;
 
 // Tests that do not depend on the screen size run only on the Redmi size.
-const ONCE = ['**/offline.spec.js'];
+const ONCE = ['**/offline.spec.js', '**/data.spec.js', '**/engine.spec.js'];
 
 // Phone sizes from the specification (14.2). Chromium with touch, like Chrome
 // on Android; continuous animations off, so screenshots are repeatable.

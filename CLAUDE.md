@@ -2,7 +2,7 @@
 
 PWA (apka webowa do zainstalowania na ekranie głównym, przede wszystkim telefony), która zadaje pytania o stan konkretnych miejsc w mieszkaniu i proponuje krótkie zadania sprzątania ze stoperem. Następca Cleanerr (natywny Android), bez powiadomień: apka czeka, aż użytkownik ją otworzy.
 
-Stan: kroki 0–2 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Następny: krok 3, dane i silnik (IndexedDB, migracje, kolejka między kartami).
+Stan: kroki 0–3 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem podglądu (hosting: GitHub Pages, użytkownik zajmie się tym później). Następny: krok 4, wygląd (motyw, kolory, krój, ikony, plamy, karty z gestami, przyciski odpowiedzi, i18n).
 
 ## Dokumenty
 
@@ -36,7 +36,9 @@ Stan: kroki 0–2 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem 
 - **Symulacja** (`tests/unit/core/simulation.test.js`, 60 dni, profile z 13.2): raport przez `node --test --test-reporter=tap tests/unit/core/simulation.test.js`. Przy zmianach w interwałach i losowaniu sprawdź kilka ziaren, nie tylko domyślne.
 - **Service worker** (`sw.js` w katalogu głównym): lista plików apki (`index.html`, `manifest.webmanifest`, `src/`, `assets/`) i skrót ich zawartości w nazwie pamięci podręcznej, wpisywane przez `npm run stamp`. Po każdej zmianie pliku apki uruchom stamp; test sprawdza, że `sw.js` jest aktualny. Nowa wersja nigdy nie przeładowuje strony w trakcie serii, zadania, Obchodu ani porządków.
 - **Ścieżki względne** wszędzie (HTML, CSS, manifest, service worker): na GitHub Pages apka działa pod `/Cleaneh/`. Testy Playwright chodzą pod tą samą podścieżką.
-- **Schemat danych**: każda zmiana to nowa wersja z migracją i testem. Brakująca migracja ma się wywrócić z błędem, nigdy po cichu kasować danych.
+- **Schemat danych** (`src/data/schema.js`): wersja schematu = wersja IndexedDB, `MIGRATIONS[n]` przechodzi z n−1 do n w transakcji zmiany wersji. Każda zmiana to nowa wersja z migracją i testem w `tests/e2e/data.spec.js` (stara baza z danymi otwierana jak w apce). Brakująca migracja i dane z nowszej wersji apki kończą otwarcie błędem bez ruszania danych; nigdy nie kasujemy danych, żeby zrobić miejsce.
+- **Magazyny v1**: `rooms` (po id), `instances` (po kluczu instancji), `state` (`features`, `activity`, `sweep`, `settings`), `answers` (indeks `kind_at`), `series`, `sweeps` (indeks `scope`). Odpowiedzi z Obchodu nie trafiają do `answers` (jak w Cleanerr), tylko rekord w `sweeps`.
+- **Silnik** (`src/engine/engine.js`): każda operacja w kolejce `navigator.locks` ('cleaneh-engine'), zawsze na świeżo wczytanym stanie, potem zapis tylko zmian i sygnał `BroadcastChannel('cleaneh')`. UI słucha `engine.onChange` i odświeża widok przez `engine.snapshot()`. Zdarzenie, które nic nie zmienia, nic nie zapisuje.
 
 ## Wygląd
 
@@ -71,6 +73,7 @@ Stan: kroki 0–2 z planu budowy (specyfikacja 14.3) zrobione, poza wdrożeniem 
 - Ręczne testy w przeglądarce robi użytkownik, ale serwer uruchamia Claude (`npm run serve` w tle), gdy użytkownik o to poprosi albo gdy jest coś nowego do obejrzenia, i podaje adres.
 - Lokalnie: `npm run serve` (http://127.0.0.1:8080/), opcje `--port`, `--host 0.0.0.0`, `--base Cleaneh`.
 - ESLint pilnuje zasad `core`: bez globali przeglądarki i Node, bez `Date.now()`/`new Date()`/`Math.random()`, bez importów z `data`/`engine`/`ui`.
+- Warstwa danych i silnik są testowane w prawdziwym Chromium (IndexedDB, Web Locks, dwie karty jako dwie strony jednego kontekstu): `tests/e2e/harness.html` ładuje moduły do `window.T`, testy wołają je przez `page.evaluate`. Każdy test Playwrighta ma świeży kontekst, więc pustą bazę. Czyste funkcje (`changes`, `migrationSteps`, `createLock` bez Web Locks) w `tests/unit/data`.
 - Zrzuty na stałych rozmiarach (projekty Playwright `redmi` 393×820, `small` 360×616, `small-130` z czcionką 130%); wybrane ekrany w ciemnym motywie i po angielsku. `shoot(page, nazwa)` z `tests/e2e/fixtures.js` zapisuje do `screenshots/<projekt>/` (poza repozytorium) — obejrzyj je po zmianach układu. Testy niezależne od rozmiaru ekranu tylko w `redmi` (`ONCE` w `playwright.config.js`). Emulacja `prefers-reduced-motion`.
 - Tryb deweloperski (specyfikacja 13.4) tylko w wersji deweloperskiej (serwer deweloperski, podglądy wdrożeń), nigdy w produkcyjnej.
 - Małe kroki, commit po każdym działającym etapie. **`git push` i wdrożenie produkcyjne tylko na wyraźne polecenie użytkownika.**

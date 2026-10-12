@@ -50,6 +50,19 @@ export default [
       ],
     },
   },
+  // Layers (specification 13.2): data knows only core; the UI changes state only through the engine.
+  {
+    files: ['src/data/**/*.js'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [{ group: ['**/engine/**', '**/ui/**'], message: 'data depends only on core.' }] }],
+    },
+  },
+  {
+    files: ['src/ui/**/*.js'],
+    rules: {
+      'no-restricted-imports': ['error', { patterns: [{ group: ['**/data/**'], message: 'The UI goes through the engine.' }] }],
+    },
+  },
   {
     files: ['sw.js'],
     languageOptions: { globals: globals.serviceworker },
@@ -59,9 +72,10 @@ export default [
     files: ['tools/**/*.mjs', 'tests/**/*.js', '*.config.js'],
     languageOptions: { globals: globals.node },
   },
-  // Playwright tests also run functions inside the page.
+  // Playwright tests also run functions inside the page, where the harness puts app modules in `T` and tests
+  // keep their own things on `window`.
   {
     files: ['tests/e2e/**/*.js'],
-    languageOptions: { globals: { ...globals.node, ...globals.browser } },
+    languageOptions: { globals: { ...globals.node, ...globals.browser, T: 'readonly', tab: 'writable', heard: 'writable' } },
   },
 ];
