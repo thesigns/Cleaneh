@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path class="s" d="M2.5 12h19"/>
+  <path class="s" d="M4.5 12v8.5M19.5 12v8.5"/>
+  <path class="sf" d="M13.5 12h6v4.5h-6z"/>
+  <path class="s" d="M15.75 14.25h1.5"/>
+  <path class="s" d="M5 12h4M7 12V8.5l2.5-2.5"/>
+  <path class="sf" d="M8.2 4.8l3-2.3 2.3 3z"/>
+</svg>

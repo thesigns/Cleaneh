@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+  <path class="sf" d="M3 20.5V9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v11.5"/>
+  <path class="sf" d="M15 20.5V9a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v11.5"/>
+  <path class="s" d="M1.5 20.5h21"/>
+  <path class="sf" d="M10 20.5l.8-4h2.4l.8 4z"/>
+  <circle class="d" cx="7.4" cy="14.5" r=".8"/>
+  <circle class="d" cx="16.6" cy="14.5" r=".8"/>
+</svg>
