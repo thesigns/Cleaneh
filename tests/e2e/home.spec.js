@@ -2,7 +2,7 @@
 // the reward, today's result and the last cleaning.
 
 import { test, expect, shoot } from './fixtures.js';
-import { editStored, openApp, resetStored, seedHome, stored } from './app.js';
+import { editStored, resetStored, seedHome, stored } from './app.js';
 
 test.use({ locale: 'pl-PL' });
 
@@ -40,7 +40,7 @@ test.describe('home', () => {
   test.beforeEach(() => test.skip(test.info().project.name !== 'redmi', 'Once is enough.'));
 
   test('a calm home before the first task, without a last-cleaning line', async ({ page }) => {
-    await openApp(page);
+    await seedHome(page, { kinds: ['KITCHEN'] });
     await mode(page, 'idle');
     await expect(page.getByRole('heading', { name: 'Na razie spokój' })).toBeVisible();
     await expect(page.locator('.home__hero .pill, .home__past')).toHaveCount(0);
@@ -56,21 +56,21 @@ test.describe('home', () => {
 
   // Hours are checked in the unit tests: a task 5 hours ago is usually today's, and today's result wins (5.1).
   test('the last cleaning: days and hours, full days, a warm sentence after a week', async ({ page }) => {
-    await openApp(page);
+    await seedHome(page, { kinds: ['KITCHEN'] });
     for (const [ago, text] of [
       [DAY + 2 * HOUR + 60_000, 'Ostatnie sprzątanie: 1 dzień i 2 godziny temu'],
       [3 * DAY + 60_000, 'Ostatnie sprzątanie: 3 dni temu'],
       [9 * DAY, 'Miło znowu widzieć. Zacznijmy od czegoś małego.'],
     ]) {
       await resetStored(page);
-      await editStored(page, (state, entry) => ({ log: [entry] }), doneEntry(ago));
+      await editStored(page, (state, entry) => ({ log: [entry], settings: { ...state.settings, onboarding: 'done' } }), doneEntry(ago));
       await page.reload();
       await expect(page.getByText(text)).toBeVisible();
     }
   });
 
   test("today's result replaces the last cleaning once a task is done today", async ({ page }) => {
-    await openApp(page);
+    await seedHome(page, { kinds: ['KITCHEN'] });
     await editStored(page, (state, entries) => ({ log: entries }), [doneEntry(60_000, 4), doneEntry(120_000, 9.5)]);
     await page.reload();
     await expect(page.getByText('Dziś: 2 zadania · 14 min')).toBeVisible();

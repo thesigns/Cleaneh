@@ -3,6 +3,7 @@
 
 import { h } from './dom.js';
 import { iconButton } from './components.js';
+import { historyLayer } from './layer.js';
 
 /**
  * Opens a sheet with a title and content; resolves when it is closed (by the close button, a tap outside,
@@ -11,7 +12,6 @@ import { iconButton } from './components.js';
 export function openSheet({ title, content, closeLabel }) {
   let resolveClosed;
   const closed = new Promise((resolve) => (resolveClosed = resolve));
-  let open = true;
 
   const panel = h(
     'div',
@@ -21,26 +21,14 @@ export function openSheet({ title, content, closeLabel }) {
   );
   const element = h('div', { class: 'sheet', onclick: (event) => event.target === element && close() }, panel);
 
-  function finish() {
-    if (!open) return;
-    open = false;
-    window.removeEventListener('popstate', onPop);
+  const layer = historyLayer(() => {
     document.removeEventListener('keydown', onKey);
     element.classList.add('sheet--closing');
     setTimeout(() => element.remove(), 200);
     resolveClosed();
-  }
-
-  /** Closes through the history, so the sheet's entry goes away too. */
-  function close() {
-    if (open) history.back();
-  }
-
-  const onPop = () => finish();
+  });
+  const close = () => layer.close();
   const onKey = (event) => event.key === 'Escape' && close();
-
-  history.pushState({ sheet: true }, '', location.href);
-  window.addEventListener('popstate', onPop);
   document.addEventListener('keydown', onKey);
   document.body.append(element);
   panel.querySelector('button')?.focus({ preventScroll: true });

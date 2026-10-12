@@ -6,6 +6,7 @@ import { seededRandom } from '../core/random.js';
 import { button, pill } from './components.js';
 import { h, reducedMotion } from './dom.js';
 import { icon } from './icons.js';
+import { historyLayer } from './layer.js';
 import { celebrate } from './sound.js';
 
 const LIFE = 3.4;
@@ -132,7 +133,6 @@ export function showReward({ title, subtitle = null, pills, badge, palette = 'gr
   let resolve;
   const result = new Promise((r) => (resolve = r));
   let choice = 'next';
-  let open = true;
 
   const waves = h('canvas', { class: 'reward__canvas', 'aria-hidden': 'true' });
   const sparks = h('canvas', { class: 'reward__canvas reward__canvas--top', 'aria-hidden': 'true' });
@@ -160,22 +160,15 @@ export function showReward({ title, subtitle = null, pills, badge, palette = 'gr
     sparks,
   );
 
-  function finish() {
-    if (!open) return;
-    open = false;
-    window.removeEventListener('popstate', onPop);
+  const layer = historyLayer(() => {
     element.classList.add('reward--leaving');
     setTimeout(() => element.remove(), 300);
     resolve(choice);
-  }
-  const onPop = () => finish();
+  });
   function close(which) {
     choice = which;
-    if (open) history.back();
+    layer.close();
   }
-
-  history.pushState({ reward: true }, '', location.href);
-  window.addEventListener('popstate', onPop);
   document.body.append(element);
   element.querySelector('.button')?.focus({ preventScroll: true });
   celebrate(sound);
@@ -193,7 +186,7 @@ export function showReward({ title, subtitle = null, pills, badge, palette = 'gr
     const center = { x: box.left + box.width / 2, y: box.top + box.height / 2 };
     const start = performance.now();
     const frame = (now) => {
-      if (!open && !element.isConnected) return;
+      if (!element.isConnected) return;
       const time = (now - start) / 1000;
       for (const [canvas, draw] of [
         [waves, (ctx) => drawWaves(ctx, center, time)],

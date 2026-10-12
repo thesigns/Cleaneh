@@ -1,7 +1,7 @@
 // The Sweep screen on the engine (specification 6, 4.5, 9.5).
 
 import { test, expect, shoot } from './fixtures.js';
-import { openApp, seedHome, stored } from './app.js';
+import { seedHome, stored } from './app.js';
 
 test.use({ locale: 'pl-PL' });
 
@@ -158,7 +158,7 @@ test.describe('on-demand Sweep', () => {
   });
 
   test('with nothing due the summary says so', async ({ page }) => {
-    await openApp(page, '/sweep');
+    await seedHome(page, { kinds: ['KITCHEN'] }, '/sweep');
     await expect(page.getByText('Teraz nic nie czeka. Pięknie!')).toBeVisible();
   });
 });

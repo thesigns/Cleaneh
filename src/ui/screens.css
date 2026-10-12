@@ -617,6 +617,344 @@
   color: var(--tone, var(--primary));
 }
 
+/* --- setup --- */
+
+.setup {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+  padding: max(0.25rem, env(safe-area-inset-top)) 1.5rem max(0.75rem, env(safe-area-inset-bottom));
+}
+
+.home-root > .setup,
+.app > .setup {
+  flex: none;
+}
+
+.setup__scroll {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  margin: 0 -1.5rem;
+  padding: 1rem 1.5rem;
+  overflow-y: auto;
+}
+
+.setup__scroll--center {
+  align-items: center;
+  text-align: center;
+}
+
+.setup__scroll--center > :first-child { margin-top: auto; }
+.setup__scroll--center > :last-child { margin-bottom: auto; }
+
+.setup__blob {
+  align-self: center;
+}
+
+.setup__title {
+  margin: 0.75rem 0 0.25rem;
+}
+
+.setup__text {
+  margin: 0 0 1.25rem;
+  color: var(--on-surface-variant);
+}
+
+.setup__note {
+  margin: 1.5rem 0 0;
+  color: var(--on-surface-variant);
+}
+
+.setup__actions {
+  display: grid;
+  justify-items: center;
+  gap: 0.25rem;
+  padding-top: 0.75rem;
+}
+
+.setup__back {
+  color: var(--on-surface-variant);
+}
+
+.dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.125rem 0 0.25rem;
+}
+
+.dots__dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--outline-variant);
+  transition: width 200ms ease;
+}
+
+.dots__dot--on {
+  width: 1.5rem;
+  background: var(--primary);
+}
+
+.points {
+  display: grid;
+  gap: 1rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.point {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.point p {
+  margin: 0;
+}
+
+.point__text {
+  color: var(--on-surface-variant);
+}
+
+.install__icon {
+  width: 6rem;
+  height: 6rem;
+  margin-bottom: 1rem;
+  border-radius: 1.5rem;
+  box-shadow: 0 0.75rem 2rem -0.75rem rgb(14 124 118 / 0.55);
+}
+
+.install-steps {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1rem 1.25rem 1rem 2.5rem;
+  border-radius: 1.25rem;
+  background: var(--card);
+  text-align: left;
+}
+
+.inline-icon {
+  --icon-size: 1.25em;
+  margin: 0 0.125em;
+  color: var(--primary);
+  vertical-align: -0.25em;
+}
+
+/* --- rooms and switches --- */
+
+.rooms {
+  display: grid;
+  gap: 1rem;
+}
+
+.room-list,
+.feature-list {
+  display: grid;
+  padding: 0.25rem;
+  border-radius: 1.5rem;
+  background: var(--card);
+}
+
+.room-row,
+.feature-row {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 0;
+  border-radius: 1.25rem;
+  background: none;
+  color: var(--on-background);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.room-row:active,
+.feature-row:active {
+  background: var(--surface-container);
+}
+
+.room-row__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.room-row__kind {
+  color: var(--on-surface-variant);
+}
+
+.room-row__edit {
+  --icon-size: 1.125rem;
+  color: var(--outline);
+}
+
+.feature-row--child {
+  padding-left: 2.25rem;
+}
+
+.feature-row__name {
+  flex: 1;
+  min-width: 0;
+}
+
+/* --- the room editor: full screen --- */
+
+.room-editor {
+  position: fixed;
+  inset: 0;
+  z-index: 12;
+  display: flex;
+  flex-direction: column;
+  max-width: 30rem;
+  margin: 0 auto;
+  padding: max(0.25rem, env(safe-area-inset-top)) 0 max(0.5rem, env(safe-area-inset-bottom));
+  background: var(--background);
+  animation: slide-up 260ms cubic-bezier(0.2, 0.9, 0.3, 1) both;
+}
+
+.room-editor--closing {
+  animation: fade 200ms ease reverse both;
+}
+
+.room-editor__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem 0.5rem;
+}
+
+.room-editor__bar h2 {
+  margin: 0;
+}
+
+.room-editor__name {
+  padding: 0.5rem 1.25rem 0;
+}
+
+.room-editor__scroll {
+  flex: 1;
+  min-height: 0;
+  padding: 0.5rem 1.25rem 1rem;
+  overflow-y: auto;
+}
+
+.room-editor__label {
+  margin: 0.75rem 0.5rem 0.5rem;
+  color: var(--primary);
+}
+
+.swatches {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+
+.swatch-button {
+  display: grid;
+  place-items: center;
+  width: 2.625rem;
+  height: 2.625rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(to bottom, var(--area-fill-top), var(--area-fill-bottom));
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.swatch-button[aria-checked='true'] {
+  box-shadow: 0 0 0 3px var(--background), 0 0 0 5px var(--area);
+}
+
+.swatch-button__check {
+  --icon-size: 1.125rem;
+  visibility: hidden;
+}
+
+.swatch-button[aria-checked='true'] .swatch-button__check {
+  visibility: visible;
+}
+
+/* Kinds: gray, since kinds have no color (7.5); two columns, one with a large font. */
+.kinds {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 10rem), 1fr));
+  gap: 0.5rem;
+}
+
+.kind-tile {
+  --blob: var(--surface-container-high);
+  --blob-icon: var(--on-surface-variant);
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  min-width: 0;
+  padding: 0.5rem 0.625rem;
+  border: 1px solid var(--outline-variant);
+  border-radius: 1.25rem;
+  background: var(--card);
+  color: var(--on-background);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.kind-tile--wide {
+  grid-column: 1 / -1;
+}
+
+/* The chosen kind lights up in the room's color; its blob turns white to keep the icon's ground. */
+.kind-tile--selected {
+  --blob: var(--card);
+  --blob-icon: var(--area);
+  border: 2px solid var(--area);
+  background: var(--area-container);
+}
+
+.kind-tile__text {
+  display: grid;
+  min-width: 0;
+}
+
+.kind-tile__hint {
+  color: var(--on-surface-variant);
+}
+
+.room-editor__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+}
+
+.room-editor__actions .button {
+  width: auto;
+  min-height: 3rem;
+}
+
+.room-editor__space {
+  flex: 1;
+}
+
+.room-editor__remove {
+  color: var(--no);
+}
+
+.room-editor__note {
+  margin: 0 1.75rem 0.5rem;
+  color: var(--on-surface-variant);
+}
+
 /* --- error --- */
 
 .error {

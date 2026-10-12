@@ -3,6 +3,7 @@
 
 import { button } from './components.js';
 import { h } from './dom.js';
+import { historyLayer } from './layer.js';
 
 /**
  * @param {object} options
@@ -18,7 +19,6 @@ export function choose({ art = null, title, body, safeLabel, otherLabel, otherTo
   let resolve;
   const result = new Promise((r) => (resolve = r));
   let choice = 'safe';
-  let open = true;
 
   const panel = h(
     'div',
@@ -35,24 +35,17 @@ export function choose({ art = null, title, body, safeLabel, otherLabel, otherTo
   );
   const element = h('div', { class: 'dialog', onclick: (event) => event.target === element && close('safe') }, panel);
 
-  function finish() {
-    if (!open) return;
-    open = false;
-    window.removeEventListener('popstate', onPop);
+  const layer = historyLayer(() => {
     document.removeEventListener('keydown', onKey);
     element.classList.add('dialog--closing');
     setTimeout(() => element.remove(), 180);
     resolve(choice);
-  }
-  const onPop = () => finish();
-  const onKey = (event) => event.key === 'Escape' && close('safe');
+  });
   function close(which) {
     choice = which;
-    if (open) history.back();
+    layer.close();
   }
-
-  history.pushState({ dialog: true }, '', location.href);
-  window.addEventListener('popstate', onPop);
+  const onKey = (event) => event.key === 'Escape' && close('safe');
   document.addEventListener('keydown', onKey);
   document.body.append(element);
   panel.querySelector('.dialog__safe')?.focus({ preventScroll: true });

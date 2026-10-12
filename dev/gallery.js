@@ -51,6 +51,7 @@ async function seedSampleHome() {
   if (household.home.rooms.length === 0) {
     await engine.updateHome(() => home);
     await engine.age(5 * 86_400_000);
+    await engine.updateSettings({ onboarding: 'done' });
   }
   engine.close();
   document.getElementById('seed-note').textContent = household.home.rooms.length ? 'The app already has rooms; nothing changed.' : 'Done. Open the app and tap Sweep.';
@@ -75,7 +76,7 @@ function overview() {
       button('Sample home in the app', seedSampleHome, { variant: 'tonal' }),
       button('Open the app', () => (location.href = '../'), { variant: 'text' }),
     ),
-    h('p', { class: 't-body-m', id: 'seed-note' }, 'Until the setup exists (step 7): adds the sample home below to the app on this address, with a few days passed, so a Sweep has something to ask.'),
+    h('p', { class: 't-body-m', id: 'seed-note' }, 'Skips the setup: adds the sample home below to the app on this address, with a few days passed, so a Sweep has something to ask.'),
 
     h('h2', {}, 'Palette'),
     h('div', { class: 'row' }, [

@@ -5,13 +5,21 @@ import { button } from './components.js';
 import { h } from './dom.js';
 import { createI18n, detectLanguage } from './i18n/index.js';
 import { loadIcons } from './icons.js';
+import { watchInstallPrompt } from './install.js';
 import { createRouter } from './router.js';
 import { homeScreen, pathToArea } from './screens/home.js';
+import { SETUP_PATHS, allowedInSetup, setupScreen } from './screens/setup.js';
 import { sweepScreen } from './screens/sweep.js';
 
-/** The screen of an address. */
+/** The screen of an address. Until the setup is done, every address leads to its current step (10). */
 function screenFor(ctx, path) {
+  const step = ctx.settings.onboarding;
+  if (step !== 'done' && !allowedInSetup(path, step)) {
+    queueMicrotask(() => ctx.router.navigate(SETUP_PATHS[step] ?? SETUP_PATHS.welcome, { replace: true }));
+    return { element: document.createElement('div') };
+  }
   const parts = path.split('/').filter(Boolean);
+  if (parts[0] === 'setup' && step !== 'done') return setupScreen(ctx, parts[1]);
   if (parts[0] === 'sweep') {
     if (parts[1] === 'first') return sweepScreen(ctx, { kind: 'first' });
     if (parts[1] === 'area' && parts[2]) return sweepScreen(ctx, { kind: 'area', area: pathToArea(parts[2]) });
@@ -36,6 +44,7 @@ function errorScreen(root, error) {
 }
 
 export async function startApp(root) {
+  watchInstallPrompt();
   await loadIcons();
   let started;
   try {

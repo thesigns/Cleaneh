@@ -7,13 +7,13 @@ export async function openApp(page, path = '/') {
 }
 
 /**
- * Sets up the home the way Settings would: rooms of these kinds and switches on. Runs app modules in the page,
- * on the app's own database. Then reopens the app at `path`.
+ * Sets up the home the way Settings would: rooms of these kinds and switches on, the setup done (unless
+ * `setupDone` is false). Runs app modules in the page, on the app's own database. Then reopens the app at `path`.
  */
-export async function seedHome(page, { kinds = [], features = [], ageDays = 0 }, path = '/') {
+export async function seedHome(page, { kinds = [], features = [], ageDays = 0, setupDone = true }, path = '/') {
   await openApp(page);
   await page.evaluate(
-    async ({ kinds, features, ageDays }) => {
+    async ({ kinds, features, ageDays, setupDone }) => {
       const [{ openStore }, home, { createScheduler }, { fixedZone }, { createEngine }] = await Promise.all([
         import('./src/data/store.js'),
         import('./src/core/home.js'),
@@ -31,12 +31,18 @@ export async function seedHome(page, { kinds = [], features = [], ageDays = 0 },
       });
       // Right after setup nothing is due (staggered start, 8.1); let time pass when a test needs due questions.
       if (ageDays) await engine.age(ageDays * 86_400_000);
+      // Tests of the app after the setup skip it (10).
+      if (setupDone) await engine.updateSettings({ onboarding: 'done' });
       engine.close();
       store.close();
     },
-    { kinds, features, ageDays },
+    { kinds, features, ageDays, setupDone },
   );
-  await openApp(page, path);
+  // A full reload, so the app reads the new state (a change of the address after '#' alone would not); then
+  // the path, which the setup may have redirected away from before.
+  await page.reload();
+  await page.waitForSelector('body[data-ready]');
+  await page.goto(`./#${path}`);
 }
 
 /** What is stored: activity, Sweep in progress, history. */

@@ -2,11 +2,12 @@
 // buttons, progress, undo, the walk card before each area, and the summary.
 
 import { currentCard, isComplete } from '../../core/sweep.js';
-import { GROUP_HUES, areaHue, areaIcon, paintArea } from '../areas.js';
-import { iconBlob } from '../blob.js';
-import { ANSWERS, ANSWER_BY_DIRECTION, answerButtons, button, iconButton, moveCard, pill, questionCard, softProgress } from '../components.js';
+import { GROUP_HUES, areaHue, paintArea } from '../areas.js';
+import { ANSWERS, ANSWER_BY_DIRECTION, answerButtons, button, iconButton, moveCard, questionCard, softProgress } from '../components.js';
 import { createDeck } from '../deck.js';
 import { h, replaceChildren } from '../dom.js';
+import { SETUP_PATHS, afterFirstSweep } from './setup.js';
+import { summaryContent } from './summary.js';
 
 const SWEEP_ANSWERS = ['NO', 'NOT_APPLICABLE', 'YES'];
 const LEAN = { yes: '--yes-container', no: '--no-container', na: '--not-applicable-container' };
@@ -145,64 +146,40 @@ export async function sweepScreen(ctx, scope) {
     return true;
   }
 
+  /** During the setup the first Sweep belongs to it: X goes back a step, the end leads on (10). */
+  const inSetup = () => sweep.scope.kind === 'first' && ctx.settings.onboarding !== 'done';
+
   async function close() {
     if (busy) return;
-    if (!(await stop())) router.navigate('/', { replace: true });
+    if (await stop()) return;
+    router.navigate(inSetup() ? '/setup/features' : '/', { replace: true });
   }
 
-  /** Ends the Sweep and shows what to start with (6.4). */
+  /** Ends the Sweep and shows what to start with (6.4); in the setup the home screen prompt comes first. */
   async function finish(nothingDue) {
     finished = true;
     const summary = await engine.finishSweep();
-    replaceChildren(element, summaryView(summary, nothingDue));
+    if (inSetup()) {
+      const next = afterFirstSweep();
+      ctx.settings = await engine.updateSettings({ onboarding: next, firstSummary: summary });
+      router.navigate(SETUP_PATHS[next], { replace: true });
+      return;
+    }
+    const goHome = () => router.navigate('/', { replace: true });
+    replaceChildren(
+      element,
+      summaryContent(ctx, sweep.start, summary, nothingDue, {
+        onStart: async () => {
+          await engine.send({ kind: 'take', key: summary.toStart[0] });
+          goHome();
+        },
+        onDone: goHome,
+      }),
+    );
     // The summary glows in the color of cleaning, like in Cleanerr, not in the last room's.
     paintArea(element, GROUP_HUES.CLEANING_GEAR);
     element.classList.remove('screen--moving');
     element.classList.add('screen--summary');
-  }
-
-  function summaryView({ toStart, remaining }, nothingDue) {
-    const subtitle = nothingDue ? 'summary.nothingDue' : toStart.length === 0 ? 'summary.allGood' : 'summary.spots';
-    const goHome = () => router.navigate('/', { replace: true });
-    const start = async () => {
-      await engine.send({ kind: 'take', key: toStart[0] });
-      goHome();
-    };
-    return h(
-      'div',
-      { class: 'summary' },
-      h(
-        'div',
-        { class: 'summary__scroll' },
-        iconBlob('ui_sparkles', { size: 'min(10.75rem, 20vh)', className: 'blob--primary summary__hero' }),
-        h('h1', { class: 'summary__title t-headline-m' }, t('summary.title')),
-        h('p', { class: 'summary__text t-body-l' }, t(subtitle)),
-        h(
-          'ul',
-          { class: 'spots' },
-          toStart.map((key, index) => {
-            const area = key.slice(key.indexOf('@') + 1);
-            const minutes = Math.max(1, Math.round(scheduler.minutes(sweep.start, key)));
-            return paintArea(
-              h(
-                'li',
-                { class: 'spot area', style: { animationDelay: `${250 + 110 * index}ms` } },
-                iconBlob(areaIcon(area, home), { size: '3.375rem', seed: index, animated: false }),
-                h('div', { class: 'spot__text' }, h('p', { class: 'spot__area t-label-m' }, i18n.areaName(area, home)), h('p', { class: 'spot__task t-title-m' }, i18n.taskText(key))),
-                pill(t('card.minutes', { minutes })),
-              ),
-              areaHue(area, home),
-            );
-          }),
-        ),
-        remaining > 0 ? h('p', { class: 'summary__remaining t-body-m' }, t('summary.remaining', { count: remaining })) : null,
-      ),
-      h(
-        'div',
-        { class: 'summary__actions' },
-        toStart.length > 0 ? [button(t('summary.start'), start), button(t('summary.later'), goHome, { variant: 'text' })] : button(t('summary.done'), goHome),
-      ),
-    );
   }
 
   if (!sweep) {
@@ -232,6 +209,8 @@ export async function sweepScreen(ctx, scope) {
   return {
     element,
     leave: async () => {
+      // A finished Sweep may always go (the setup leads on from it while the last answer is still being saved).
+      if (finished) return false;
       if (busy) return true;
       return stop();
     },
