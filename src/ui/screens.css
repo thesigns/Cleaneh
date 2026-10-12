@@ -955,6 +955,192 @@
   color: var(--on-surface-variant);
 }
 
+/* --- settings --- */
+
+.home__settings {
+  margin-left: auto;
+  margin-right: -0.75rem;
+}
+
+/* A plain background, like Cleanerr's settings: the sticky bar blends in. */
+.settings {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: max(1rem, env(safe-area-inset-bottom));
+  background: var(--background);
+}
+
+.settings__bar {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: max(0.25rem, env(safe-area-inset-top)) 0.5rem 0.25rem;
+  background: var(--background);
+}
+
+.settings__bar h1 {
+  margin: 0;
+}
+
+.settings__body {
+  display: grid;
+  gap: 1.25rem;
+  padding: 0.5rem 1rem 1rem;
+}
+
+.settings__intro {
+  margin: 0 0.5rem;
+  color: var(--on-surface-variant);
+}
+
+.settings__section {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.settings__heading {
+  margin: 0 0.75rem;
+  color: var(--primary);
+}
+
+.settings__group {
+  display: grid;
+  padding: 0.25rem;
+  border-radius: 1.5rem;
+  background: var(--card);
+}
+
+.setting {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  width: 100%;
+  padding: 0.625rem 0.75rem;
+  border: 0;
+  border-radius: 1.25rem;
+  background: none;
+  color: var(--on-background);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.setting:active {
+  background: var(--surface-container);
+}
+
+.setting__text {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.setting__sub {
+  color: var(--on-surface-variant);
+}
+
+.setting__chevron {
+  --icon-size: 1.125rem;
+  color: var(--outline);
+  transform: rotate(180deg);
+}
+
+.about {
+  display: grid;
+  gap: 0.25rem;
+  padding: 1rem;
+  border-radius: 1.5rem;
+  background: var(--card);
+  color: var(--on-surface-variant);
+}
+
+.about p {
+  margin: 0;
+}
+
+.about__name {
+  color: var(--on-background);
+}
+
+.link {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--primary);
+  font: inherit;
+  text-align: left;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.license {
+  margin: 0;
+  font-size: 0.75rem;
+  white-space: pre-wrap;
+}
+
+.off {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.off__empty {
+  margin: 0;
+  padding: 1rem;
+}
+
+.off-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+}
+
+.off-row__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.off-row__restore.button {
+  width: auto;
+  min-height: 2.5rem;
+  padding: 0.25rem 1rem;
+  font-size: 0.875rem;
+}
+
+.choices {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.choice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  min-height: 3.5rem;
+  padding: 0.5rem 1rem;
+  border: 0;
+  border-radius: 1.25rem;
+  background: none;
+  color: var(--on-background);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.choice[aria-checked='true'] {
+  background: var(--primary-container);
+  color: var(--on-primary-container);
+}
+
+.install-sheet {
+  padding: 0 0.5rem 0.5rem;
+}
+
 /* --- error --- */
 
 .error {

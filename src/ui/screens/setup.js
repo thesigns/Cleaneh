@@ -129,14 +129,7 @@ export async function setupScreen(ctx, step) {
             await promptInstall();
             finish();
           }, { iconName: 'ui_add_square' })
-        : way === 'ios'
-          ? h(
-              'ol',
-              { class: 'install-steps t-body-l' },
-              h('li', {}, ...withIcon(t('install.iosStep1'), 'ui_share')),
-              h('li', {}, ...withIcon(t('install.iosStep2'), 'ui_add_square')),
-            )
-          : h('p', { class: 't-body-l setup__text' }, t('install.other'));
+        : installInstructions(t, way);
     return {
       element: h(
         'div',
@@ -179,6 +172,14 @@ export async function setupScreen(ctx, step) {
       }),
     ), GROUP_HUES.CLEANING_GEAR),
   };
+}
+
+/** How to add the app to the home screen where the browser has no install window: Safari's steps, or a hint. */
+export function installInstructions(t, way) {
+  if (way === 'ios') {
+    return h('ol', { class: 'install-steps t-body-l' }, h('li', {}, ...withIcon(t('install.iosStep1'), 'ui_share')), h('li', {}, ...withIcon(t('install.iosStep2'), 'ui_add_square')));
+  }
+  return h('p', { class: 't-body-l setup__text' }, t('install.other'));
 }
 
 /** A text with '{icon}' replaced by the icon. */

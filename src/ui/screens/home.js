@@ -143,7 +143,13 @@ export async function homeScreen(ctx) {
       element: h(
         'div',
         { class: 'screen home' },
-        h('header', { class: 'home__bar' }, h('img', { class: 'home__logo', src: 'assets/icons/app.svg', alt: '' }), h('span', { class: 'home__name t-title-l' }, t('app.name'))),
+        h(
+          'header',
+          { class: 'home__bar' },
+          h('img', { class: 'home__logo', src: 'assets/icons/app.svg', alt: '' }),
+          h('span', { class: 'home__name t-title-l' }, t('app.name')),
+          iconButton('ui_settings', t('home.settings'), () => router.navigate('/settings'), { className: 'home__settings' }),
+        ),
         h(
           'div',
           { class: 'home__hero' },
