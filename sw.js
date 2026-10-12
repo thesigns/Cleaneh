@@ -7,7 +7,7 @@
 // A test checks the block is up to date.
 
 // <stamp>
-const VERSION = '36d0853da690';
+const VERSION = '97247e99fef0';
 const FILES = [
   'assets/fonts/OFL.txt',
   'assets/fonts/nunito.woff2',
@@ -22,7 +22,9 @@ const FILES = [
   'manifest.webmanifest',
   'src/core/catalog-data.js',
   'src/core/catalog.js',
+  'src/core/clean.js',
   'src/core/home.js',
+  'src/core/loop.js',
   'src/core/random.js',
   'src/core/scheduler.js',
   'src/core/time.js',
