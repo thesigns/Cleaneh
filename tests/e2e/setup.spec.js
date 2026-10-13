@@ -80,6 +80,8 @@ test.describe('setup', () => {
     expect(state.household.home.rooms.map((r) => [r.kind, r.name, r.color])).toEqual([['KITCHEN', null, 0], ['BEDROOM', 'Gościnny', 4]]);
     expect(state.household.home.features.sort()).toEqual(['CAT', 'DISHWASHER', 'PET']);
     expect(state.history.sweeps).toEqual([expect.objectContaining({ scope: 'first', completed: true })]);
+    // Home is the app's first history entry: Back there closes the app (9.5).
+    expect(await page.evaluate(() => history.state.depth)).toBe(0);
   });
 
   test('an interrupted setup comes back in the same step; the first Sweep resumes', async ({ page }) => {

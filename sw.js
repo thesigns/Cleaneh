@@ -7,7 +7,7 @@
 // A test checks the block is up to date.
 
 // <stamp>
-const VERSION = 'bc4ed3c9d22e';
+const VERSION = '2c13788f4feb';
 const FILES = [
   'assets/fonts/OFL.txt',
   'assets/fonts/nunito.woff2',

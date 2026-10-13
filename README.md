@@ -11,7 +11,7 @@
 
 ---
 
-> **Status: early development.** The offline app skeleton, the decision logic (with tests and a 60-day simulation) and on-device storage, the setup, the Sweep, the main loop (give me a task, series, stopwatch, rewards), the big clean, settings and developer mode are in place; the final PWA polish is next.
+> **Status: early development.** The offline app skeleton, the decision logic (with tests and a 60-day simulation) and on-device storage, the setup, the Sweep, the main loop (give me a task, series, stopwatch, rewards), the big clean, settings, developer mode and the PWA polish (updates only when the app is opened, Back like a native app) are in place; next is deploying to GitHub Pages and testing on a phone.
 > See the [build order](docs/cleaneh-design.md#143-kolejność-budowy) in the specification.
 
 ## The idea

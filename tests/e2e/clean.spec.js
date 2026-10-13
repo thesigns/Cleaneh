@@ -101,6 +101,8 @@ test.describe('big clean', () => {
     await page.getByRole('button', { name: 'Zakończ' }).click();
     await expect(root(page)).toHaveAttribute('data-mode', 'idle');
     await expect(page.locator('.reward')).toHaveCount(0);
+    // Home is the app's first history entry: Back there closes the app (9.5).
+    expect(await page.evaluate(() => history.state.depth)).toBe(0);
   });
 
   test('"Enough for now" on a block reward ends with the final reward', async ({ page }) => {

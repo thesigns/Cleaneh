@@ -183,7 +183,7 @@ async function startOver(ctx) {
   const keep = { language: ctx.settings.language, sound: ctx.settings.sound };
   await engine.reset();
   ctx.settings = await engine.updateSettings({ ...keep, onboarding: 'rooms' });
-  router.navigate('/setup/rooms', { replace: true });
+  router.root('/setup/rooms');
 }
 
 /** The typeface's license, as shipped with the app. */

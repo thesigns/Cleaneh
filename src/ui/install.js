@@ -2,6 +2,10 @@
 // persistent storage (9.3).
 
 let deferred = null;
+// Installed from this page: the page itself still runs in the browser.
+let installedHere = false;
+const listeners = new Set();
+const changed = () => listeners.forEach((listener) => listener());
 
 /**
  * Keeps Chrome's install prompt for later (the install button). Call once at start, before the browser
@@ -11,13 +15,24 @@ export function watchInstallPrompt() {
   window.addEventListener('beforeinstallprompt', (event) => {
     event.preventDefault();
     deferred = event;
+    changed();
   });
-  window.addEventListener('appinstalled', () => (deferred = null));
+  window.addEventListener('appinstalled', () => {
+    deferred = null;
+    installedHere = true;
+    changed();
+  });
 }
 
-/** Whether the app runs installed (from the home screen, without the browser's bar). */
+/** Calls `listener` when the install window becomes ready (it may come late) or the app got installed. */
+export function onInstallChange(listener) {
+  listeners.add(listener);
+  return () => listeners.delete(listener);
+}
+
+/** Whether the app is installed: runs from the home screen (without the browser's bar) or was installed from here. */
 export function isInstalled() {
-  return globalThis.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
+  return installedHere || globalThis.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
 }
 
 /**

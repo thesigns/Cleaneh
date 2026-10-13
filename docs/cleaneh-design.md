@@ -343,7 +343,9 @@ Cleaneh nie ma powiadomień (2, 3). Zamiast rozdziału o powiadomieniach i ich n
 
 - Service worker trzyma całą apkę (kod, krój, ikony) w pamięci podręcznej. Po pierwszym wczytaniu apka działa bez internetu.
 - Wersja apki jest w service workerze: lista plików apki i skrót ich zawartości w nazwie pamięci podręcznej. Wpisuje je skrypt z `tools/` (`npm run stamp`), więc każda zmiana pliku apki to nowa wersja. Bez kroku budowania łatwo o to zapomnieć, dlatego test sprawdza, że lista i skrót zgadzają się z plikami apki.
-- Nowa wersja pobiera się w tle i włącza przy następnym otwarciu apki, bez pytania użytkownika. Nigdy w trakcie serii, zadania, Obchodu ani porządków.
+- Nowa wersja pobiera się w tle i włącza przy następnym otwarciu apki, bez pytania użytkownika. Nigdy w trakcie serii, zadania, Obchodu ani porządków: wtedy czeka na kolejne otwarcie.
+- Otwarcie to start apki (strona przeładowuje się w nową wersję, zanim cokolwiek pokaże) albo powrót do niej po co najmniej 5 minutach w tle, bo telefon trzyma zainstalowaną apkę w tle całymi dniami. Przy powrocie apka sama sprawdza, czy jest nowa wersja (najwyżej co 30 minut), bo bez wczytania strony przeglądarka tego nie robi; znaleziona czeka na następne otwarcie.
+- Gdy nową wersję włączy inna karta, pozostałe przeładowują się przy swoim następnym otwarciu, też nie w trakcie serii, zadania, Obchodu ani porządków.
 - Zmiana schematu danych to nowa wersja schematu z migracją (13.3).
 
 ### 9.3. Dane
@@ -364,7 +366,7 @@ Cleaneh nie ma powiadomień (2, 3). Zamiast rozdziału o powiadomieniach i ich n
 - **Dźwięk** nagród syntezowany na bieżąco (Web Audio), bez plików audio; zawsze po stuknięciu użytkownika (wymóg przeglądarek); wyłączany w ustawieniach (5.2).
 - **Motyw** jasny albo ciemny według systemu (`prefers-color-scheme`). **Animacje ciągłe** (falujące plamy) wyłączone przy `prefers-reduced-motion`; krótkie przejścia zostają, skrócone.
 - **Gesty**: przeciąganie kart nie może uruchamiać przewijania strony, odświeżania przeciągnięciem w dół (NIE TERAZ to przesunięcie w dół) ani gestu "wstecz" przeglądarki (`touch-action`, `overscroll-behavior`).
-- **Wstecz** (przycisk i gest na Androidzie) zamyka okno albo wraca do poprzedniego ekranu, jak w natywnej apce; nawigacja przez historię przeglądarki. Na ekranie głównym apki Wstecz ją zamyka. W Obchodzie Wstecz działa jak X (przerwanie z zapisem), nie jak cofnięcie odpowiedzi.
+- **Wstecz** (przycisk i gest na Androidzie) zamyka okno albo wraca do poprzedniego ekranu, jak w natywnej apce; nawigacja przez historię przeglądarki. Na ekranie głównym apki Wstecz ją zamyka: ekran główny zawsze stoi na pierwszym wpisie historii apki, więc powrót do niego (koniec Obchodu, porządków, kreatora) cofa historię zamiast dopisywać wpis. Po „Zacznij od nowa” kreator też zaczyna od pierwszego wpisu. W Obchodzie Wstecz działa jak X (przerwanie z zapisem), nie jak cofnięcie odpowiedzi.
 - **Bezpieczne marginesy** (wycięcia ekranu, pasek gestów) przez `env(safe-area-inset-*)` i `viewport-fit=cover`.
 - **Czcionka**: układ znosi powiększenie tekstu w przeglądarce i systemie (do ok. 130%).
 

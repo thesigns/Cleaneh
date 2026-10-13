@@ -138,6 +138,8 @@ test.describe('on-demand Sweep', () => {
     await page.getByRole('button', { name: /Gotowe|Później/ }).click();
     await expect(page.getByRole('button', { name: 'Obchód', exact: true })).toBeVisible();
     expect((await stored(page)).history.sweeps).toEqual([expect.objectContaining({ scope: 'home', completed: false, answered: 1 })]);
+    // Home is the app's first history entry: Back there closes the app (9.5).
+    expect(await page.evaluate(() => history.state.depth)).toBe(0);
   });
 
   test('Back closes the scope sheet', async ({ page }) => {

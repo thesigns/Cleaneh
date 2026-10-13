@@ -80,6 +80,22 @@ test.describe('settings', () => {
     await expect(sheet).toHaveCount(0);
   });
 
+  test('an install window that comes late is used; once installed, the offer goes', async ({ page }) => {
+    await seedHome(page, { kinds: ['KITCHEN'] });
+    await openSettings(page);
+    await page.evaluate(() => {
+      const event = new Event('beforeinstallprompt', { cancelable: true });
+      event.prompt = () => (window.prompted = true);
+      event.userChoice = Promise.resolve({ outcome: 'accepted' });
+      window.dispatchEvent(event);
+    });
+    await page.getByRole('button', { name: /Zainstaluj apkę/ }).click();
+    await expect.poll(() => page.evaluate(() => window.prompted)).toBe(true);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await page.evaluate(() => window.dispatchEvent(new Event('appinstalled')));
+    await expect(page.getByRole('button', { name: /Zainstaluj apkę/ })).toHaveCount(0);
+  });
+
   test('starting over asks, deletes everything but language and sound, and goes back to the rooms', async ({ page }) => {
     await seedHome(page, { kinds: ['KITCHEN', 'BATHROOM'], ageDays: 3 });
     await editStored(page, (state) => ({ settings: { ...state.settings, sound: false }, log: [{ key: 'kitchen_counter_clean@room#1', kind: 'DONE', at: Date.now(), taskTimeMs: 60000 }] }));
@@ -98,6 +114,8 @@ test.describe('settings', () => {
     expect(state.household.home.rooms).toEqual([]);
     expect(state.history).toEqual({ answers: [], series: [], sweeps: [] });
     expect(state.settings).toMatchObject({ onboarding: 'rooms', sound: false });
+    // Nothing to go back to from the setup.
+    expect(await page.evaluate(() => history.state.depth)).toBe(0);
   });
 
   test('about: the version and the typeface license', async ({ page }) => {

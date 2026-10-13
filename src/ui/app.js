@@ -6,8 +6,9 @@ import { devMode, devPref, loadDevPrefs } from './dev.js';
 import { h } from './dom.js';
 import { createI18n, detectLanguage } from './i18n/index.js';
 import { loadIcons } from './icons.js';
-import { watchInstallPrompt } from './install.js';
+import { onInstallChange, watchInstallPrompt } from './install.js';
 import { createRouter } from './router.js';
+import { createUpdater } from './service-worker.js';
 import { cleanScreen } from './screens/clean.js';
 import { devScreen } from './screens/dev.js';
 import { homeScreen, pathToArea } from './screens/home.js';
@@ -50,8 +51,15 @@ function errorScreen(root, error) {
   );
 }
 
+/** Waits this long for a new version to take over before starting without it. */
+const SWITCH_TIMEOUT_MS = 3000;
+
 export async function startApp(root) {
   watchInstallPrompt();
+  let engine = null;
+  // A new version goes in only when nothing is going on (9.2); without data there is nothing to interrupt.
+  const updater = 'serviceWorker' in navigator ? createUpdater({ isIdle: () => (engine ? engine.isIdle() : Promise.resolve(true)) }) : null;
+  const registered = updater?.register();
   // Developer mode (13.4): with ?dev on the real address its data goes to a database of its own.
   const dev = devMode(location);
   if (dev) loadDevPrefs();
@@ -62,12 +70,19 @@ export async function startApp(root) {
   } catch (error) {
     console.error(error);
     errorScreen(root, error);
+    // A newer version may be able to open the data.
+    await registered;
+    updater?.applyIfIdle();
     return null;
   }
-  const { engine, scheduler } = started;
+  engine = started.engine;
+  const { scheduler } = started;
 
   // Close what was left behind before showing anything (4.3).
   await engine.open();
+  // Opening the app is when a new version goes in: the page reloads into it before showing anything.
+  await registered;
+  if (await updater?.applyIfIdle()) await new Promise((resolve) => setTimeout(resolve, SWITCH_TIMEOUT_MS));
   const { settings } = await engine.snapshot();
   const i18n = createI18n(settings.language ?? detectLanguage());
   document.documentElement.lang = i18n.lang;
@@ -85,9 +100,15 @@ export async function startApp(root) {
   };
   ctx.router = createRouter(root, (path) => screenFor(ctx, path));
 
-  // Coming back to the tab: close what was left behind meanwhile (4.3).
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') engine.open();
+  // Coming back: close what was left behind meanwhile (4.3); after a while away it counts as opening the app.
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible') return updater?.hidden();
+    await engine.open();
+    await updater?.visible();
+  });
+  // Chrome's install window may get ready after a screen offering it is shown; installed, the offer goes.
+  onInstallChange(() => {
+    if (/^\/(setup\/install|settings)$/.test(ctx.router.path ?? '')) ctx.router.refresh();
   });
   // A newer version of the app opened in another tab needs the database: reload into it; everything is saved.
   engine.onChange((change) => {

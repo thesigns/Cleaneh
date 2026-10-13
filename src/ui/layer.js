@@ -3,6 +3,8 @@
 // Layers can be stacked (a confirmation over the room editor): going back
 // closes only the layers above the history entry it lands on.
 
+import { depthOf } from './router.js';
+
 let nextId = Date.now();
 
 /**
@@ -19,7 +21,7 @@ export function historyLayer(onClosed) {
     window.removeEventListener('popstate', onPop);
     onClosed();
   };
-  history.pushState({ layer: id }, '', location.href);
+  history.pushState({ layer: id, depth: depthOf() + 1 }, '', location.href);
   window.addEventListener('popstate', onPop);
   return {
     /** Closes through the history, so the layer's entry goes away too. */
