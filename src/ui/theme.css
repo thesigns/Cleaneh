@@ -1,5 +1,5 @@
 /* Cleaneh theme: colors and type from Cleanerr 1.4 (specification 13.1).
- * The theme follows the system; data-theme="light" / "dark" on <html> overrides it (developer mode, 13.4).
+ * The theme follows the system; data-theme="light" / "dark" on <html> overrides it (the theme setting, specification 5.2).
  * The dark tokens are written twice (system and override): CSS cannot join a media query and a selector. */
 
 @font-face {
