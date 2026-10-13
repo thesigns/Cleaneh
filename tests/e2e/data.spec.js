@@ -17,7 +17,7 @@ test('an empty database loads as a new app', async ({ page }) => {
     household: { home: { rooms: [], features: [] }, instances: {} },
     activity: { kind: 'idle' },
     sweep: null,
-    settings: { language: null, sound: true, onboarding: 'welcome', installPromptShown: false },
+    settings: { language: null, theme: null, sound: true, onboarding: 'welcome', installPromptShown: false },
   });
 });
 

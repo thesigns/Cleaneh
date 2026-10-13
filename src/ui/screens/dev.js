@@ -9,8 +9,9 @@ import { button } from '../components.js';
 import { devPref, setDevPref } from '../dev.js';
 import { h, replaceChildren } from '../dom.js';
 import { LANGUAGES } from '../i18n/index.js';
+import { THEMES } from '../theme.js';
 import { pastLine } from './home.js';
-import { page, row, section } from './settings.js';
+import { page, row, section, setTheme, themeKey } from './settings.js';
 
 const AGES = [
   { key: 'dev.age12h', done: 'dev.aged12h', ms: 12 * HOUR_MS },
@@ -23,12 +24,6 @@ const LAST = [
   { choice: 'hour', key: 'dev.lastHour', agoMs: HOUR_MS },
   { choice: '2d', key: 'dev.last2d', agoMs: 2 * DAY_MS },
   { choice: '2w', key: 'dev.last2w', agoMs: 14 * DAY_MS },
-];
-
-const THEMES = [
-  { value: null, key: 'dev.themeSystem' },
-  { value: 'light', key: 'dev.themeLight' },
-  { value: 'dark', key: 'dev.themeDark' },
 ];
 
 /** A group of choices, one checked: `options` are `{ value, label }`; `pick(value)` on a tap. */
@@ -133,7 +128,7 @@ export async function devScreen(ctx, part) {
         ctx.settings = await engine.updateSettings({ language: value });
         location.reload();
       }),
-      segments(t('dev.theme'), THEMES.map((o) => ({ value: o.value, label: t(o.key) })), devPref('theme'), (value) => setDevPref('theme', value)),
+      segments(t('settings.theme'), THEMES.map((theme) => ({ value: theme, label: t(themeKey(theme)) })), ctx.settings.theme, (value) => setTheme(ctx, value)),
     ),
     panel(t('dev.last'), t('dev.lastText'), lasts, lastNote, todayNote),
     section(t('dev.pool'), row({ iconName: 'ui_sweep', hue: GROUP_HUES.CLEANING_GEAR, title: t('dev.pool'), text: t('dev.poolText'), onClick: () => router.navigate('/settings/dev/pool') })),

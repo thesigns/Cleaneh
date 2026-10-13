@@ -63,6 +63,41 @@ test.describe('settings', () => {
     expect((await stored(page)).settings.language).toBeNull();
   });
 
+  test('the theme: at once, before anything shows after a reload, in other tabs too', async ({ page, context }) => {
+    // What the page looks like before the settings are read from the database.
+    await page.addInitScript(() => document.addEventListener('DOMContentLoaded', () => {
+      window.themeAtLoad = document.documentElement.dataset.theme ?? null;
+      window.barAtLoad = [...document.querySelectorAll('meta[name="theme-color"]')].map((m) => m.media);
+    }));
+    await seedHome(page, { kinds: ['KITCHEN'] });
+    const other = await context.newPage();
+    await other.goto('./#/');
+    await other.waitForSelector('body[data-ready]');
+    await openSettings(page);
+    const row = page.getByRole('button', { name: /Motyw/ });
+    await expect(row).toContainText('Systemowy');
+    await row.click();
+    await page.getByRole('radio', { name: 'Ciemny' }).click();
+    await expect(row).toContainText('Ciemny');
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
+    await expect.poll(async () => (await stored(page)).settings.theme).toBe('dark');
+    await expect.poll(() => other.evaluate(() => document.documentElement.dataset.theme ?? null)).toBe('dark');
+
+    await page.reload();
+    await page.waitForSelector('body[data-ready]');
+    expect(await page.evaluate(() => [window.themeAtLoad, window.barAtLoad])).toEqual(['dark', ['not all', 'all']]);
+
+    await row.click();
+    await page.getByRole('radio', { name: 'Jasny' }).click();
+    expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('light');
+    await row.click();
+    await page.getByRole('radio', { name: 'Systemowy' }).click();
+    await expect(row).toContainText('Systemowy');
+    expect(await page.evaluate(() => [document.documentElement.dataset.theme ?? null, [...document.querySelectorAll('meta[name="theme-color"]')].map((m) => m.media)])).toEqual([null, ['(prefers-color-scheme: light)', '(prefers-color-scheme: dark)']]);
+    await expect.poll(async () => (await stored(page)).settings.theme).toBeNull();
+    await expect.poll(() => other.evaluate(() => document.documentElement.dataset.theme ?? null)).toBeNull();
+  });
+
   test('sound and vibration can be switched off', async ({ page }) => {
     await seedHome(page, { kinds: ['KITCHEN'] });
     await openSettings(page);
@@ -96,9 +131,9 @@ test.describe('settings', () => {
     await expect(page.getByRole('button', { name: /Zainstaluj apkę/ })).toHaveCount(0);
   });
 
-  test('starting over asks, deletes everything but language and sound, and goes back to the rooms', async ({ page }) => {
+  test('starting over asks, deletes everything but language, theme and sound, and goes back to the rooms', async ({ page }) => {
     await seedHome(page, { kinds: ['KITCHEN', 'BATHROOM'], ageDays: 3 });
-    await editStored(page, (state) => ({ settings: { ...state.settings, sound: false }, log: [{ key: 'kitchen_counter_clean@room#1', kind: 'DONE', at: Date.now(), taskTimeMs: 60000 }] }));
+    await editStored(page, (state) => ({ settings: { ...state.settings, sound: false, theme: 'dark' }, log: [{ key: 'kitchen_counter_clean@room#1', kind: 'DONE', at: Date.now(), taskTimeMs: 60000 }] }));
     await page.reload();
     await openSettings(page);
     await page.getByRole('button', { name: /Zacznij od nowa/ }).click();
@@ -113,7 +148,7 @@ test.describe('settings', () => {
     const state = await stored(page);
     expect(state.household.home.rooms).toEqual([]);
     expect(state.history).toEqual({ answers: [], series: [], sweeps: [] });
-    expect(state.settings).toMatchObject({ onboarding: 'rooms', sound: false });
+    expect(state.settings).toMatchObject({ onboarding: 'rooms', sound: false, theme: 'dark' });
     // Nothing to go back to from the setup.
     expect(await page.evaluate(() => history.state.depth)).toBe(0);
   });

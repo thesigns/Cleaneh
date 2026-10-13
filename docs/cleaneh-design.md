@@ -132,9 +132,10 @@ To, co widać po otwarciu apki (po zamknięciu porzuconych rzeczy, 4.3):
 - **Pomieszczenia** (7.5) i **Sprzęty i domownicy** (7.6) — te same ekrany co w kreatorze.
 - **Wyłączone pytania** (NIE MAM, także z Obchodu) z możliwością przywrócenia każdego.
 - **Język** (12.1).
+- **Motyw** — systemowy (domyślnie), jasny albo ciemny (9.5). Zmienia się od razu, bez przeładowania.
 - **Dźwięk i wibracja** — jeden przełącznik, domyślnie włączony. Przeglądarka nie ma osobnego wyciszenia dla apki, więc wyłącznik jest w apce.
 - **Zainstaluj apkę** (9.1) — tylko gdy Cleaneh nie jest zainstalowany.
-- **Zacznij od nowa** — po potwierdzeniu usuwa wszystkie dane (pomieszczenia, przełączniki, stan pytań, historię, trwający Obchód i zadanie). Apka wraca do kreatora (10).
+- **Zacznij od nowa** — po potwierdzeniu usuwa wszystkie dane (pomieszczenia, przełączniki, stan pytań, historię, trwający Obchód i zadanie). Zostają tylko język, motyw oraz dźwięk i wibracja. Apka wraca do kreatora (10).
 - **O aplikacji**: wersja, licencja kroju pisma.
 
 ## 6. Obchód
@@ -365,7 +366,7 @@ Cleaneh nie ma powiadomień (2, 3). Zamiast rozdziału o powiadomieniach i ich n
 
 - **Wibracja** (`navigator.vibrate`) działa na Androidzie; na iPhonie jej nie ma, apka po prostu z niej nie korzysta.
 - **Dźwięk** nagród syntezowany na bieżąco (Web Audio), bez plików audio; zawsze po stuknięciu użytkownika (wymóg przeglądarek); wyłączany w ustawieniach (5.2).
-- **Motyw** jasny albo ciemny według systemu (`prefers-color-scheme`). **Animacje ciągłe** (falujące plamy) wyłączone przy `prefers-reduced-motion`; krótkie przejścia zostają, skrócone.
+- **Motyw** jasny albo ciemny według systemu (`prefers-color-scheme`), chyba że w ustawieniach wybrano jasny albo ciemny (5.2). Wybór obejmuje też kolor paska stanu i od razu działa w innych kartach. Ustawienia apki są w IndexedDB, które czyta się dopiero po chwili, więc kopia wyboru w pamięci przeglądarki (`localStorage`) nakłada motyw, zanim cokolwiek się pokaże. **Animacje ciągłe** (falujące plamy) wyłączone przy `prefers-reduced-motion`; krótkie przejścia zostają, skrócone.
 - **Gesty**: przeciąganie kart nie może uruchamiać przewijania strony, odświeżania przeciągnięciem w dół (NIE TERAZ to przesunięcie w dół) ani gestu "wstecz" przeglądarki (`touch-action`, `overscroll-behavior`).
 - **Wstecz** (przycisk i gest na Androidzie) zamyka okno albo wraca do poprzedniego ekranu, jak w natywnej apce; nawigacja przez historię przeglądarki. Na ekranie głównym apki Wstecz ją zamyka: ekran główny zawsze stoi na pierwszym wpisie historii apki, więc powrót do niego (koniec Obchodu, porządków, kreatora) cofa historię zamiast dopisywać wpis. Po „Zacznij od nowa” kreator też zaczyna od pierwszego wpisu. W Obchodzie Wstecz działa jak X (przerwanie z zapisem), nie jak cofnięcie odpowiedzi.
 - **Bezpieczne marginesy** (wycięcia ekranu, pasek gestów) przez `env(safe-area-inset-*)` i `viewport-fit=cover`.
@@ -528,18 +529,18 @@ Zasada: cała logika decyzyjna jest w `core` i jest pokryta testami jednostkowym
 - **Stan instancji pytania** (klucz: identyfikator pytania + obszar): interwał, data ostatniego TAK lub ZROBIONE (także sztuczna z rozłożonego startu), pierwsze E z NIE w cyklu (8.3), wyłączenie (NIE MAM), początek sezonu, wyuczony czas zadania, data ostatniego prawdziwego TAK lub ZROBIONE (do porządków, 4.4).
 - **Historia**: odpowiedzi (z rzeczywistym czasem zadań przy ZROBIONE), serie, Obchody.
 - **Bieżąca aktywność**: pytanie, propozycja zadania albo zadanie ze stoperem (godzina startu i szacowanego końca, ten drugi tylko do progu zapomnianego zadania, 4.3), z serią i postępem porządków; Obchód w toku z odpowiedziami do cofania.
-- **Ustawienia**: język, dźwięk i wibracja, krok onboardingu, czy zachęta do instalacji była już pokazana.
+- **Ustawienia**: język, motyw, dźwięk i wibracja, krok onboardingu, czy zachęta do instalacji była już pokazana.
 - **Wersja schematu** z migracjami. Brakująca migracja ma się wywrócić z błędem, nigdy po cichu kasować danych. Każda migracja ma test (stara baza z przykładowymi danymi otwierana jak w apce).
 
 ### 13.4. Tryb deweloperski
 
 Tylko w wersji deweloperskiej; w prawdziwej apce go nie ma. Wersja deweloperska to serwer deweloperski (`localhost`, `127.0.0.1`) albo dowolny adres z `?dev` (GitHub Pages nie ma podglądów wdrożeń, więc na telefonie: wdrożona apka z `?dev`, w przeglądarce, nie z ikony). Na serwerze deweloperskim dane są osobne same z siebie, bo inny adres to osobne miejsce w przeglądarce; pod `?dev` apka używa osobnej bazy (`cleaneh-dev`, z własną kolejką i kanałem kart), więc prawdziwe dane zostają nietknięte.
 
-Wejście: sekcja „Dla programistów” na końcu Ustawień, ekran `/settings/dev`, podgląd puli `/settings/dev/pool`. Pokrętła (miesiąc, motyw, ostatnie sprzątanie na niby) trzyma `localStorage` tej przeglądarki, poza danymi apki i bez migracji; inne karty idą za zmianą.
+Wejście: sekcja „Dla programistów” na końcu Ustawień, ekran `/settings/dev`, podgląd puli `/settings/dev/pool`. Pokrętła (miesiąc, ostatnie sprzątanie na niby) trzyma `localStorage` tej przeglądarki, poza danymi apki i bez migracji; inne karty idą za zmianą.
 
 - **Przesunięcie czasu** (+12 h, +1 dzień, +1 tydzień): zegar zostaje prawdziwy, a stan pytań się starzeje (daty ostatniego sprzątania cofają się o tyle). Dla harmonogramu to to samo co upływ czasu, a stoper i podsumowanie dnia działają normalnie. Tylko gdy nic nie trwa (bez serii, zadania i Obchodu w toku); inaczej krótka informacja, że coś trwa. Historia odpowiedzi się nie zmienia.
 - **Podmiana bieżącego miesiąca** (test sezonowości): sezony liczą się według wybranego miesiąca.
-- **Szybkie przełączanie** języka (to samo ustawienie co w Ustawieniach, apka się przeładowuje) i motywu (systemowy, jasny, ciemny; od razu, bez przeładowania).
+- **Szybkie przełączanie** języka i motywu: te same ustawienia co w Ustawieniach (5.2). Po zmianie języka apka się przeładowuje, motyw zmienia się od razu.
 - **Podgląd puli**: aktywne pytania z interwałem, przeterminowaniem, wagą i szacowanym czasem; najpierw te w puli, według wagi.
 - **Ostatnie sprzątanie na niby**: ustawienie czasu ostatniego ZROBIONE (godzina, 2 dni, 2 tygodnie temu, albo prawdziwe), żeby obejrzeć wszystkie warianty linijki z 5.1. Zastępuje prawdziwy czas tylko w tej linijce, historia się nie zmienia; ekran pokazuje, jak linijka brzmi. „Nigdy” i „przed chwilą” widać naturalnie (nowe mieszkanie, świeże ZROBIONE).
 

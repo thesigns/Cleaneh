@@ -128,7 +128,7 @@ test('settings are saved and merged', async ({ page }) => {
     await engine.updateSettings({ sound: false });
     return (await engine.snapshot()).settings;
   });
-  expect(settings).toEqual({ language: 'pl', sound: false, onboarding: 'welcome', installPromptShown: false });
+  expect(settings).toEqual({ language: 'pl', theme: null, sound: false, onboarding: 'welcome', installPromptShown: false });
 });
 
 test.describe('two tabs', () => {

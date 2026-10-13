@@ -20,5 +20,5 @@ export async function startEngine({ name = DB_NAME, dev = null } = {}) {
   const zone = ianaZone(Intl.DateTimeFormat().resolvedOptions().timeZone);
   const scheduler = createScheduler({ zone, seasonMonth: dev?.month });
   const engine = createEngine({ store, scheduler, zone, lock: createLock(`${name}-engine`), channelName: name, lastDoneAt: dev?.lastDoneAt });
-  return { engine, scheduler, zone };
+  return { engine, scheduler, zone, name };
 }

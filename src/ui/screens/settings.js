@@ -1,5 +1,5 @@
 // Settings (specification 5.2): rooms and switches (the same editors as in
-// the setup), turned-off questions, language, sound and vibration, installing,
+// the setup), turned-off questions, language, theme, sound and vibration, installing,
 // starting over, and about; in the development version also developer mode (13.4).
 
 import { APP_VERSION } from '../../version.js';
@@ -15,6 +15,7 @@ import { icon } from '../icons.js';
 import { installWay, isInstalled, promptInstall } from '../install.js';
 import { roomsEditor } from '../rooms.js';
 import { openSheet } from '../sheet.js';
+import { THEMES, applyTheme } from '../theme.js';
 import { installInstructions } from './setup.js';
 
 /** A page of Settings: back, title, an optional intro, the content. */
@@ -78,6 +79,7 @@ export async function settingsScreen(ctx, part) {
     section(
       t('settings.app'),
       row({ iconName: 'ui_sparkles', hue: GROUP_HUES.ELECTRONICS, title: t('settings.language'), text: languageLabel, onClick: () => chooseLanguage(ctx) }),
+      row({ iconName: 'ui_theme', hue: ROOM_HUES[3], title: t('settings.theme'), text: t(themeKey(ctx.settings.theme)), onClick: () => chooseTheme(ctx) }),
       row({ iconName: 'ui_play', hue: GROUP_HUES.CLEANING_GEAR, title: t('settings.sound'), text: t('settings.soundText'), control: sound, id: 'setting-sound' }),
       isInstalled() ? null : row({ iconName: 'ui_add_square', hue: GROUP_HUES.AIR, title: t('settings.install'), text: t('settings.installText'), onClick: () => install(ctx) }),
     ),
@@ -142,19 +144,44 @@ async function turnedOffList(ctx) {
   return box;
 }
 
+/**
+ * A sheet with one choice checked: `options` are `{ value, label }`. Resolves `{ value }` with the one picked,
+ * or null when closed without picking.
+ */
+async function pickOne(ctx, title, options, current) {
+  let picked = null;
+  const option = ({ value, label }) =>
+    h('button', { type: 'button', class: 'choice', role: 'radio', 'aria-checked': String(current === value), onclick: () => ((picked = { value }), sheet.close()) }, h('span', { class: 't-title-m' }, label), current === value ? icon('ui_check') : null);
+  const sheet = openSheet({ title, content: h('div', { class: 'choices', role: 'radiogroup' }, options.map(option)), closeLabel: ctx.i18n.t('scope.close') });
+  await sheet.closed;
+  return picked;
+}
+
 /** The app's language: the browser's, or one chosen (12.1). The app reloads in it. */
 async function chooseLanguage(ctx) {
-  const { engine, i18n } = ctx;
-  const t = i18n.t;
-  let picked;
-  const option = (value, label) =>
-    h('button', { type: 'button', class: 'choice', role: 'radio', 'aria-checked': String(ctx.settings.language === value), onclick: () => ((picked = { value }), sheet.close()) }, h('span', { class: 't-title-m' }, label), ctx.settings.language === value ? icon('ui_check') : null);
-  const content = h('div', { class: 'choices', role: 'radiogroup' }, option(null, t('settings.languageSystem')), ...LANGUAGES.map((lang) => option(lang, t(`language.${lang}`))));
-  const sheet = openSheet({ title: t('settings.language'), content, closeLabel: t('scope.close') });
-  await sheet.closed;
+  const t = ctx.i18n.t;
+  const options = [{ value: null, label: t('settings.languageSystem') }, ...LANGUAGES.map((lang) => ({ value: lang, label: t(`language.${lang}`) }))];
+  const picked = await pickOne(ctx, t('settings.language'), options, ctx.settings.language);
   if (!picked || picked.value === ctx.settings.language) return;
-  ctx.settings = await engine.updateSettings({ language: picked.value });
+  ctx.settings = await ctx.engine.updateSettings({ language: picked.value });
   location.reload();
+}
+
+/** The text key of a theme choice. */
+export const themeKey = (theme) => ({ light: 'settings.themeLight', dark: 'settings.themeDark' })[theme] ?? 'settings.themeSystem';
+
+/** Light, dark or the system's (5.2, 9.5): at once, without a reload. */
+export async function setTheme(ctx, theme) {
+  applyTheme(theme);
+  ctx.settings = await ctx.engine.updateSettings({ theme });
+}
+
+async function chooseTheme(ctx) {
+  const t = ctx.i18n.t;
+  const picked = await pickOne(ctx, t('settings.theme'), THEMES.map((theme) => ({ value: theme, label: t(themeKey(theme)) })), ctx.settings.theme);
+  if (!picked || picked.value === ctx.settings.theme) return;
+  await setTheme(ctx, picked.value);
+  ctx.router.refresh();
 }
 
 /** Installs through Chrome's window, or shows how to add the app where there is none (9.1). */
@@ -168,7 +195,7 @@ async function install(ctx) {
   openSheet({ title: t('install.title'), content: h('div', { class: 'install-sheet' }, h('p', { class: 't-body-m setup__text' }, t('install.text')), installInstructions(t, way)), closeLabel: t('install.close') });
 }
 
-/** Deletes everything after a question and goes back to the setup, at the rooms (10); language and sound stay. */
+/** Deletes everything after a question and goes back to the setup, at the rooms (10); language, theme and sound stay. */
 async function startOver(ctx) {
   const { engine, i18n, router } = ctx;
   const t = i18n.t;
@@ -180,7 +207,7 @@ async function startOver(ctx) {
     otherTone: 'tone-no',
   });
   if (choice !== 'other') return;
-  const keep = { language: ctx.settings.language, sound: ctx.settings.sound };
+  const keep = { language: ctx.settings.language, theme: ctx.settings.theme, sound: ctx.settings.sound };
   await engine.reset();
   ctx.settings = await engine.updateSettings({ ...keep, onboarding: 'rooms' });
   router.root('/setup/rooms');

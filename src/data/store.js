@@ -10,13 +10,14 @@ import { DB_NAME, MIGRATIONS, SCHEMA_VERSION, STORES, migrationSteps } from './s
 /**
  * @typedef {object} Settings
  * @property {string | null} language 'en' or 'pl'; null = from the browser
+ * @property {'light' | 'dark' | null} theme null = from the system
  * @property {boolean} sound sound and vibration
  * @property {string} onboarding the setup step to come back to; 'done' after it
  * @property {boolean} installPromptShown
  */
 
 /** @type {Settings} */
-export const DEFAULT_SETTINGS = Object.freeze({ language: null, sound: true, onboarding: 'welcome', installPromptShown: false });
+export const DEFAULT_SETTINGS = Object.freeze({ language: null, theme: null, sound: true, onboarding: 'welcome', installPromptShown: false });
 
 /**
  * What one commit writes. Fields left out stay as they are.

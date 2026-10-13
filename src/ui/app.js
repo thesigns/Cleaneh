@@ -9,6 +9,7 @@ import { loadIcons } from './icons.js';
 import { onInstallChange, watchInstallPrompt } from './install.js';
 import { createRouter } from './router.js';
 import { createUpdater } from './service-worker.js';
+import { startTheme } from './theme.js';
 import { cleanScreen } from './screens/clean.js';
 import { devScreen } from './screens/dev.js';
 import { homeScreen, pathToArea } from './screens/home.js';
@@ -76,7 +77,7 @@ export async function startApp(root) {
     return null;
   }
   engine = started.engine;
-  const { scheduler } = started;
+  const { scheduler, name } = started;
 
   // Close what was left behind before showing anything (4.3).
   await engine.open();
@@ -99,6 +100,11 @@ export async function startApp(root) {
     router: null,
   };
   ctx.router = createRouter(root, (path) => screenFor(ctx, path));
+  // The theme chosen in another tab: Settings show it too.
+  startTheme(name, settings.theme, (theme) => {
+    ctx.settings = { ...ctx.settings, theme };
+    if (/^\/settings(\/dev)?$/.test(ctx.router.path ?? '')) ctx.router.refresh();
+  });
 
   // Coming back: close what was left behind meanwhile (4.3); after a while away it counts as opening the app.
   document.addEventListener('visibilitychange', async () => {

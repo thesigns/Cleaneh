@@ -65,12 +65,13 @@ test.describe('developer mode', () => {
     await expect(snow).toHaveCount(0);
   });
 
-  test('the theme switches at once and stays after a reload; the language reloads the app', async ({ page }) => {
+  test('the theme (the same setting as in Settings) switches at once; the language reloads the app', async ({ page }) => {
     await seedHome(page, { kinds: ['KITCHEN'] });
     await openDev(page);
     const themes = page.getByRole('radiogroup', { name: 'Motyw' });
     await themes.getByRole('radio', { name: 'Ciemny' }).click();
     expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
+    await expect.poll(async () => (await stored(page)).settings.theme).toBe('dark');
     await page.reload();
     await page.waitForSelector('body[data-ready]');
     expect(await page.evaluate(() => document.documentElement.dataset.theme)).toBe('dark');
