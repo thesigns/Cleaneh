@@ -62,6 +62,10 @@ The service worker, installation and persistent storage need HTTPS or `localhost
 
 **Developer mode** (time shift, season month, language and theme, a pretend last cleaning, the pool preview) is at the end of Settings on `localhost`, or on any address with `?dev` — there with a separate database, so real data stays untouched. The real app never shows it.
 
+## Publishing
+
+The repository root is the app, so GitHub Pages can serve it as it is: Settings → Pages → Deploy from a branch → `main`, `/ (root)`. All paths are relative, so it works under `https://<user>.github.io/<repo>/`. `.nojekyll` tells Pages to serve the files untouched. Only the files listed in `sw.js` are cached by the app; the rest of the repository (docs, tests) is reachable on the site but never loaded by it.
+
 ## Development
 
 | Command | What it does |

@@ -1,7 +1,9 @@
 // The setup (specification 10): welcome, rooms, gear and household, the first
 // Sweep, the home screen prompt, the Sweep's summary. Every step has its own
 // address (Back goes one step back) and is saved, so an interrupted setup
-// comes back where it stopped.
+// comes back where it stopped. On an iPhone the home screen prompt comes right
+// after the welcome: the app on the home screen has its own data there, so a
+// setup done in Safari would not come along (9.1).
 
 import { activeRooms } from '../../core/home.js';
 import { GROUP_HUES, paintArea } from '../areas.js';
@@ -10,7 +12,7 @@ import { button } from '../components.js';
 import { h } from '../dom.js';
 import { featuresEditor } from '../features.js';
 import { icon } from '../icons.js';
-import { installWay, isInstalled, promptInstall, requestPersistence } from '../install.js';
+import { installWay, isInstalled, isIos, promptInstall, requestPersistence } from '../install.js';
 import { roomsEditor } from '../rooms.js';
 import { summaryContent } from './summary.js';
 
@@ -24,13 +26,20 @@ export const SETUP_PATHS = {
   summary: '/setup/summary',
 };
 
+/** The home screen prompt comes first, right after the welcome: in Safari on an iPhone (9.1, 10). */
+export function installFirst() {
+  return isIos() && !isInstalled();
+}
+
 /**
  * Whether a path may show during the setup at `step`. Before the first Sweep is done the steps up to it can be
  * gone back to; after it only the current step remains (a second first Sweep would start the intervals over).
+ * `early`: the home screen prompt is one of the steps before the Sweep.
  */
-export function allowedInSetup(path, step) {
-  if (step === 'install' || step === 'summary') return path === SETUP_PATHS[step];
-  return [SETUP_PATHS.welcome, SETUP_PATHS.rooms, SETUP_PATHS.features, SETUP_PATHS.sweep].includes(path);
+export function allowedInSetup(path, step, early = installFirst()) {
+  if (step === 'summary' || (step === 'install' && !early)) return path === SETUP_PATHS[step];
+  const before = [SETUP_PATHS.welcome, ...(early ? [SETUP_PATHS.install] : []), SETUP_PATHS.rooms, SETUP_PATHS.features, SETUP_PATHS.sweep];
+  return before.includes(path);
 }
 
 /** Saves the step the user is on, so the app comes back to it. */
@@ -39,9 +48,9 @@ async function enter(ctx, step, extra = {}) {
   ctx.settings = await ctx.engine.updateSettings({ onboarding: step, ...extra });
 }
 
-/** The step after the first Sweep: the home screen prompt, unless the app is installed already. */
+/** The step after the first Sweep: the home screen prompt, unless the app is installed or it came first (iPhone). */
 export function afterFirstSweep() {
-  return isInstalled() ? 'summary' : 'install';
+  return isInstalled() || isIos() ? 'summary' : 'install';
 }
 
 function brandBar(t) {
@@ -80,7 +89,7 @@ export async function setupScreen(ctx, step) {
           ),
           h('p', { class: 'setup__note t-body-m' }, t('setup.note')),
         ),
-        h('div', { class: 'setup__actions' }, button(t('setup.start'), () => go('rooms'))),
+        h('div', { class: 'setup__actions' }, button(t('setup.start'), () => go(installFirst() ? 'install' : 'rooms'))),
       ),
     };
   }
@@ -118,7 +127,15 @@ export async function setupScreen(ctx, step) {
   }
 
   if (step === 'install') {
+    // Before the rooms (iPhone) Skip goes on to them and Back comes back here; after the first Sweep there is
+    // no way back.
+    const early = !ctx.settings.firstSummary;
     const finish = async () => {
+      if (early) {
+        await enter(ctx, 'rooms', { installPromptShown: true });
+        router.navigate(SETUP_PATHS.rooms);
+        return;
+      }
       await enter(ctx, 'summary', { installPromptShown: true });
       router.navigate(SETUP_PATHS.summary, { replace: true });
     };
@@ -142,6 +159,7 @@ export async function setupScreen(ctx, step) {
           h('h1', { class: 'setup__title t-headline-m' }, t('install.title')),
           h('p', { class: 'setup__text t-body-l' }, t('install.text')),
           way === 'prompt' ? null : how,
+          early && way === 'ios' ? h('p', { class: 'setup__note install__first t-body-m' }, t('install.iosFirst')) : null,
         ),
         h('div', { class: 'setup__actions' }, way === 'prompt' ? how : null, button(t('install.skip'), finish, { variant: way === 'prompt' ? 'text' : 'filled' })),
       ),

@@ -337,6 +337,7 @@ Cleaneh nie ma powiadomień (2, 3). Zamiast rozdziału o powiadomieniach i ich n
 - Cleaneh działa w zwykłej karcie przeglądarki, ale jest pomyślany jako apka na ekranie głównym: manifest z nazwą, ikoną (domek z iskrą, wersja zwykła i maskowalna), kolorami motywu, trybem pełnoekranowym bez paska przeglądarki (`standalone`) i orientacją pionową.
 - **Android (Chrome)**: przycisk "Zainstaluj apkę" otwiera systemowe okno instalacji (`beforeinstallprompt`). **iPhone (Safari 16.4+)**: krótka instrukcja "Udostępnij → Do ekranu początkowego" z ikonami. Inne przeglądarki: ogólna wskazówka albo nic.
 - Zachęta do instalacji w onboardingu (10) i w ustawieniach, tylko gdy apka nie jest zainstalowana (tryb wyświetlania inny niż `standalone`). Bez banerów i bez powtarzania.
+- **iPhone ma osobne dane dla apki z ekranu początkowego i dla Safari.** Gdy kreator przejdzie w Safari, a apka trafi na ekran początkowy dopiero potem, z ikony zaczyna od zera. Dlatego na iPhonie zachęta do instalacji jest na początku kreatora, zaraz po powitaniu (10), z dopiskiem, żeby dalej przejść już w apce z ikony. Na Androidzie dane są wspólne, więc tam zachęta zostaje po pierwszym Obchodzie.
 - Dlaczego warto: ikona na ekranie głównym telefonu to jedyne przypomnienie, jakie Cleaneh ma, a zainstalowana apka ma trwalsze dane (9.3).
 
 ### 9.2. Offline i aktualizacje
@@ -381,7 +382,7 @@ Cel: od pierwszego otwarcia do pierwszego zadania w kilka minut. Konfiguracja ty
 5. **Na ekranie głównym** — tylko gdy apka nie jest zainstalowana: "Cleaneh nie wysyła przypomnień. Ikona na ekranie głównym przypomni sama, a dane będą bezpieczniejsze." Przycisk instalacji albo instrukcja (9.1) i "Pomiń".
 6. **Podsumowanie Obchodu** z propozycją pierwszego zadania.
 
-Kroki 2–3 są przed Obchodem, bo bez nich nie wiadomo, o co pytać. Krok 5 jest po Obchodzie, a przed jego podsumowaniem (najpierw wartość, potem prośba), i można go pominąć. Po onboardingu apka prosi o trwałe miejsce na dane (9.3). Przerwany kreator wraca przy następnym otwarciu w tym samym kroku. Reset ("Zacznij od nowa") zaczyna od kroku 2.
+Kroki 2–3 są przed Obchodem, bo bez nich nie wiadomo, o co pytać. Krok 5 jest po Obchodzie, a przed jego podsumowaniem (najpierw wartość, potem prośba), i można go pominąć. **Wyjątek: iPhone (Safari)** — tam krok 5 jest zaraz po powitaniu, przed pomieszczeniami, z dopiskiem: „Na iPhonie apka z ikony ma osobne dane niż Safari. Po dodaniu otwórz Cleaneh z ikony i tam zacznij.” (9.1). „Pomiń” prowadzi dalej w Safari, a po pierwszym Obchodzie zachęta już nie wraca. Wstecz z pomieszczeń wraca do tego kroku. Po onboardingu apka prosi o trwałe miejsce na dane (9.3). Przerwany kreator wraca przy następnym otwarciu w tym samym kroku. Reset ("Zacznij od nowa") zaczyna od kroku 2.
 
 Ekrany z kroków 2 i 3 są tymi samymi ekranami co "Pomieszczenia" i "Sprzęty i domownicy" w ustawieniach.
 

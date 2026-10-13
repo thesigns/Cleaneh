@@ -145,6 +145,7 @@ export default {
   'install.button': 'Zainstaluj apkę',
   'install.iosStep1': 'Stuknij Udostępnij {icon} w Safari',
   'install.iosStep2': 'Wybierz „Do ekranu początkowego” {icon}',
+  'install.iosFirst': 'Na iPhonie apka z ikony ma osobne dane niż Safari. Po dodaniu otwórz Cleaneh z ikony i tam zacznij.',
   'install.other': 'Dodaj Cleaneh do ekranu głównego z menu przeglądarki.',
   'install.skip': 'Pomiń',
 

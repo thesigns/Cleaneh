@@ -35,15 +35,18 @@ export function isInstalled() {
   return installedHere || globalThis.matchMedia?.('(display-mode: standalone)').matches || navigator.standalone === true;
 }
 
+/** An iPhone or iPad. There the app on the home screen keeps its data apart from Safari's (9.1). */
+export function isIos() {
+  return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+
 /**
  * How this browser installs: 'prompt' (Chrome's install window is ready), 'ios' (Safari: Share, then Add to
  * Home Screen), 'other' (from the browser's menu, if at all).
  */
 export function installWay() {
   if (deferred) return 'prompt';
-  const ua = navigator.userAgent;
-  const ios = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  return ios ? 'ios' : 'other';
+  return isIos() ? 'ios' : 'other';
 }
 
 /** Shows Chrome's install window. Resolves true when the user installed. */

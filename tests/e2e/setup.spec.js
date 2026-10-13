@@ -7,6 +7,9 @@ test.use({ locale: 'pl-PL' });
 
 const next = (page) => page.getByRole('button', { name: 'Dalej', exact: true });
 
+// Safari on an iPhone, as far as the app can tell.
+const IPHONE = 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.5 Mobile/15E148 Safari/604.1';
+
 /** Adds a room in the editor: kind, optionally a name and a color (1–7). */
 async function addRoom(page, kind, { name = null, color = null } = {}) {
   await page.getByRole('button', { name: 'Nowe pomieszczenie' }).click();
@@ -126,6 +129,35 @@ test.describe('setup', () => {
     await expect(page).toHaveURL(/#\/setup\/install$/);
   });
 
+  test.describe('on an iPhone', () => {
+    test.use({ userAgent: IPHONE });
+
+    test('the home screen prompt comes right after the welcome, and not again after the first Sweep', async ({ page }) => {
+      await openApp(page);
+      await page.getByRole('button', { name: 'Zaczynamy' }).click();
+      await expect(page).toHaveURL(/#\/setup\/install$/);
+      await expect(page.getByText('Stuknij Udostępnij')).toBeVisible();
+      await expect(page.getByText(/osobne dane niż Safari/)).toBeVisible();
+      await page.getByRole('button', { name: 'Pomiń' }).click();
+      await expect(page.getByRole('heading', { name: 'Twoje pomieszczenia' })).toBeVisible();
+      await page.goBack();
+      await expect(page.getByRole('heading', { name: 'Na ekranie głównym' })).toBeVisible();
+      await page.reload();
+      await expect(page).toHaveURL(/#\/setup\/install$/);
+      await page.getByRole('button', { name: 'Pomiń' }).click();
+
+      await addRoom(page, 'Toaleta');
+      await next(page).click();
+      await next(page).click();
+      await sweepThrough(page);
+      await expect(page.getByRole('heading', { name: 'Obchód zaliczony!' })).toBeVisible();
+      await page.getByRole('button', { name: 'Gotowe' }).click();
+      await expect(page.locator('.home-root[data-mode="idle"]')).toBeVisible();
+      expect((await stored(page)).settings).toMatchObject({ onboarding: 'done', installPromptShown: true });
+      expect(await page.evaluate(() => history.state.depth)).toBe(0);
+    });
+  });
+
   test('the room editor: default names, editing, removing with a question, the last room stays', async ({ page }) => {
     await openApp(page, '/setup/rooms');
     await page.getByRole('button', { name: 'Nowe pomieszczenie' }).click();
@@ -199,4 +231,15 @@ test.describe('screenshots', () => {
       await shoot(page, `setup-install-${theme}`);
     });
   }
+
+  test.describe('on an iPhone', () => {
+    test.use({ userAgent: IPHONE });
+
+    test('setup, home screen prompt first', async ({ page }) => {
+      await openApp(page);
+      await page.getByRole('button', { name: 'Zaczynamy' }).click();
+      await expect(page.getByText(/osobne dane niż Safari/)).toBeVisible();
+      await shoot(page, 'setup-install-ios');
+    });
+  });
 });

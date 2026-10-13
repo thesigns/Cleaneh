@@ -134,6 +134,7 @@ export default {
   'install.button': 'Install the app',
   'install.iosStep1': 'Tap Share {icon} in Safari',
   'install.iosStep2': 'Choose “Add to Home Screen” {icon}',
+  'install.iosFirst': 'On an iPhone, the app on the home screen keeps its own data, apart from Safari. Once it’s added, open Cleaneh from the icon and start there.',
   'install.other': "Add Cleaneh to your home screen from the browser's menu.",
   'install.skip': 'Skip',
 
