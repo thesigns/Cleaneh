@@ -2,7 +2,7 @@
 
 A PWA (a web app to install on the home screen, phones first) that asks about the state of specific places in the home and offers short cleaning tasks with a stopwatch. The successor of Cleanerr (native Android), without notifications: the app waits for the user to open it.
 
-Status: the build plan (specification 14.3, steps 0–11) is done: the skeleton, logic, data, engine, look (building blocks in `src/ui`, gallery `dev/gallery.html`), the Sweep, the home screen with series, stopwatch and rewards, the setup, Settings, the big clean, developer mode and PWA polish. Since then: the home screen prompt first on iPhones and a theme setting. Left: publishing on GitHub Pages at https://thesigns.github.io/Cleaneh/ (the user creates the repository and turns Pages on) and testing on a phone.
+Status: the build plan (specification 14.3, steps 0–11) is done: the skeleton, logic, data, engine, look (building blocks in `src/ui`, gallery `dev/gallery.html`), the Sweep, the home screen with series, stopwatch and rewards, the setup, Settings, the big clean, developer mode and PWA polish. Since then: the home screen prompt first on iPhones and a theme setting. Published on GitHub Pages at https://thesigns.github.io/Cleaneh/ (repository `thesigns/Cleaneh`, version 0.1, 2026-10-13); the user tested it on the Redmi and it works. Next steps come from the user.
 
 The user speaks Polish: talk to them in Polish. Code, comments, commit messages, `README.md` and this file are in English; the specification and the question catalogue are in Polish.
 
